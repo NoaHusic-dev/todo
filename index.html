@@ -1,0 +1,316 @@
+<!DOCTYPE html>
+<html lang="hr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>TODO</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@400;500;600;700&family=Space+Grotesk:wght@500;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #e9e7e8;
+    --ink: #1a1023;
+    --muted: #5e5469;
+    --grid: #b7b3b8;
+    --accent: #2b2bb8;
+    --sans: "Hanken Grotesk", "Helvetica Neue", Helvetica, Arial, sans-serif;
+    --label: "Space Grotesk", "Helvetica Neue", Helvetica, Arial, sans-serif;
+    --gutter: 45px;
+    --cols: 9;
+  }
+  * { box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body {
+    margin: 0; background: var(--bg); color: var(--ink); font-family: var(--sans);
+    padding: env(safe-area-inset-top, 0) 0 env(safe-area-inset-bottom, 0);
+  }
+  a { color: inherit; }
+  :focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
+
+  .caps { font-family: var(--label); font-size: .72rem; letter-spacing: .32em; text-transform: uppercase; font-weight: 500; }
+
+  /* zaglavlje */
+  header {
+    margin: 0 var(--gutter); height: 62px; border-bottom: 1px solid var(--ink);
+    display: flex; align-items: center; justify-content: space-between; gap: 16px;
+  }
+  .logo { font-family: var(--label); font-weight: 700; font-size: 1.3rem; letter-spacing: .01em; text-decoration: none; }
+  nav { display: flex; gap: clamp(18px, 4vw, 66px); }
+  nav a { text-decoration: none; padding: 6px 0; position: relative; }
+  nav a::after { content: ""; position: absolute; left: 0; bottom: 0; height: 1px; width: 0; background: var(--ink); transition: width .25s; }
+  nav a:hover::after { width: calc(100% - .32em); }
+
+  /* okvir s vertikalnim linijama */
+  .frame {
+    position: relative; margin: 20px var(--gutter) 0; min-height: calc(100vh - 82px);
+    border-left: 1px solid var(--grid); border-right: 1px solid var(--grid);
+    background-image: linear-gradient(to right, var(--grid) 1px, transparent 1px);
+    background-size: calc(100% / var(--cols)) 100%;
+    padding: 24px clamp(20px, 5vw, 88px) 40px;
+    display: flex; flex-direction: column;
+  }
+  .content { max-width: 760px; width: 100%; }
+
+  .eyebrow { line-height: 2.1; }
+  .eyebrow::after { content: ""; display: block; width: 51px; height: 1px; background: var(--ink); margin-top: 18px; }
+
+
+  h1 {
+    font-weight: 600; letter-spacing: -.055em; line-height: .98; margin: clamp(56px, 11vh, 120px) 0 0;
+    font-size: clamp(2.9rem, 8.2vw, 6.4rem);
+  }
+  h1 span { display: block; color: var(--muted); }
+
+  /* unos */
+  form { margin-top: clamp(44px, 8vh, 84px); display: grid; gap: 22px; }
+  .title-input, .field {
+    background: transparent; border: 0; border-bottom: 1px solid var(--ink); border-radius: 0;
+    color: var(--ink); font-family: var(--sans); padding: 10px 0; outline: none; width: 100%;
+  }
+  .title-input { font-size: clamp(1.2rem, 3vw, 1.6rem); font-weight: 500; letter-spacing: -.02em; }
+  .title-input::placeholder, .field::placeholder { color: var(--muted); opacity: 1; }
+  .title-input:focus, .field:focus { border-bottom-color: var(--accent); }
+  .fields { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; }
+  .field { font-size: .95rem; }
+  select.field { appearance: none; cursor: pointer;
+    background-image: linear-gradient(45deg, transparent 50%, var(--ink) 50%), linear-gradient(135deg, var(--ink) 50%, transparent 50%);
+    background-position: calc(100% - 9px) 55%, calc(100% - 4px) 55%; background-size: 5px 5px; background-repeat: no-repeat; }
+
+  .cta { display: inline-flex; align-items: center; gap: clamp(18px, 4vw, 52px); background: none; border: 0; padding: 0; cursor: pointer; color: var(--ink); width: fit-content; }
+  .circle {
+    width: 71px; height: 71px; border-radius: 50%; border: 1px solid var(--ink);
+    display: grid; place-content: center; font-size: 1rem; line-height: 1;
+    transition: background .2s, color .2s, transform .2s;
+  }
+  .cta:hover .circle { background: var(--ink); color: var(--bg); transform: translateX(4px); }
+  .cta:active .circle { transform: scale(.96); }
+  .cta .caps { line-height: 2.1; text-align: left; }
+
+  /* filteri */
+  .bar { display: flex; flex-wrap: wrap; gap: 14px 24px; align-items: center; justify-content: space-between; margin-top: clamp(44px, 8vh, 80px); padding-bottom: 14px; border-bottom: 1px solid var(--ink); }
+  .filters { display: flex; gap: clamp(14px, 3vw, 30px); }
+  .tab { background: none; border: 0; padding: 4px 0; cursor: pointer; color: var(--muted); position: relative; }
+  .tab::after { content: ""; position: absolute; left: 0; bottom: -1px; height: 1px; width: 0; background: var(--ink); transition: width .25s; }
+  .tab:hover, .tab[aria-pressed="true"] { color: var(--ink); }
+  .tab[aria-pressed="true"]::after { width: calc(100% - .32em); }
+  .count { color: var(--muted); }
+  .count:empty { display: none; }
+
+  /* lista */
+  ul { list-style: none; margin: 0; padding: 0; }
+  li { display: flex; align-items: center; gap: 18px; padding: 18px 0; border-bottom: 1px solid var(--grid); transition: opacity .2s, transform .2s; }
+  li.removing { opacity: 0; transform: translateX(14px); }
+  .check {
+    appearance: none; flex: none; width: 26px; height: 26px; margin: 0; border: 1px solid var(--ink); border-radius: 50%;
+    cursor: pointer; display: grid; place-content: center; background: transparent; transition: background .18s;
+  }
+  .check:hover { background: rgba(26, 16, 35, .1); }
+  .check:checked { background: var(--ink); }
+  .check:checked::after { content: ""; width: 6px; height: 11px; margin-top: -2px; border: solid var(--bg); border-width: 0 1.5px 1.5px 0; transform: rotate(45deg); }
+  .body { flex: 1; min-width: 0; }
+  .text { font-size: 1.15rem; font-weight: 500; letter-spacing: -.02em; overflow-wrap: anywhere; position: relative; width: fit-content; max-width: 100%; transition: color .2s; }
+  .text::after { content: ""; position: absolute; left: 0; top: 55%; height: 1.5px; width: 0; background: currentColor; transition: width .28s ease; }
+  li.done .text { color: var(--muted); }
+  li.done .text::after { width: 100%; }
+  .meta { display: flex; flex-wrap: wrap; gap: 6px 18px; margin-top: 8px; color: var(--muted); font-size: .6rem; }
+  .prio { display: inline-flex; align-items: center; gap: 8px; }
+  .prio::before { content: ""; width: 7px; height: 7px; border-radius: 50%; background: var(--muted); }
+  .prio.visok { color: var(--ink); } .prio.visok::before { background: var(--accent); }
+  .prio.nizak::before { background: transparent; border: 1px solid var(--muted); }
+  .del { flex: none; width: 36px; height: 36px; border-radius: 50%; border: 1px solid transparent; background: none; color: var(--muted); font-size: 1.2rem; line-height: 1; cursor: pointer; transition: all .18s; }
+  .del:hover { border-color: var(--ink); color: var(--ink); }
+  .empty { display: block; padding: 34px 0; color: var(--muted); border-bottom: 1px solid var(--grid); }
+
+  .clear { background: none; border: 0; padding: 4px 0; margin-top: 22px; cursor: pointer; color: var(--muted); }
+  .clear:hover { color: var(--ink); }
+
+  /* kredit */
+  footer { margin-top: auto; padding-top: clamp(56px, 10vh, 110px); }
+  .credit { display: flex; flex-wrap: wrap; gap: 8px 36px; align-items: baseline; color: var(--muted); scroll-margin-top: 80px; }
+  .credit strong { color: var(--ink); font-weight: 500; }
+  .credit a { text-decoration: none; border-bottom: 1px solid var(--grid); padding-bottom: 2px; transition: border-color .2s, color .2s; }
+  .credit a:hover { color: var(--ink); border-color: var(--ink); }
+
+  @media (max-width: 720px) {
+    :root { --gutter: 16px; --cols: 4; }
+    .caps { letter-spacing: .22em; font-size: .66rem; }
+    header { height: auto; flex-direction: column; padding: 14px 0 6px; gap: 4px; }
+    nav { gap: 22px; }
+    nav a { padding: 10px 0; }
+    .content { margin: 0 auto; text-align: center; }
+    .eyebrow::after { margin: 18px auto 0; }
+    .title-input, .field, select.field { text-align: center; text-align-last: center; }
+    .cta { margin: 0 auto; }
+    .bar { justify-content: center; }
+    .count { flex-basis: 100%; }
+    .text { margin: 0 auto; }
+    .meta { justify-content: center; }
+    .credit { text-align: center; }
+    .frame { padding: 28px 20px 32px; min-height: calc(100vh - 110px); }
+    h1 { margin-top: 44px; font-size: clamp(2.5rem, 13vw, 3.6rem); }
+    form { margin-top: 36px; }
+    .fields { grid-template-columns: 1fr; gap: 18px; }
+    .field, select.field { font-size: 16px; padding: 12px 0; }
+    .cta { flex-direction: column; gap: 14px; }
+    .cta .caps { text-align: center; }
+    .filters { gap: 22px; }
+    .tab { padding: 10px 0; }
+    li { gap: 12px; }
+    .check { width: 28px; height: 28px; }
+    .del { width: 44px; height: 44px; }
+    .clear { padding: 12px 0; }
+    .credit { flex-direction: column; align-items: center; gap: 10px; }
+  }
+  @media (prefers-reduced-motion: reduce) { * { transition: none !important; scroll-behavior: auto !important; } }
+</style>
+</head>
+<body>
+<header>
+  <a class="logo" href="#">NoaHusic-dev</a>
+  <nav class="caps" aria-label="Glavna navigacija">
+    <a href="https://github.com/NoaHusic-dev" target="_blank" rel="noopener">GitHub</a>
+  </nav>
+</header>
+
+<main class="frame">
+
+  <div class="content">
+    <h1>Moji zadaci<span>na jednom mjestu</span></h1>
+
+    <form id="form" autocomplete="off" aria-labelledby="zadaci">
+      <input class="title-input" id="title" type="text" placeholder="Što treba napraviti?" maxlength="140" required aria-label="Naslov zadatka">
+      <div class="fields">
+        <input class="field" id="category" type="text" placeholder="Kategorija (neobavezno)" maxlength="24" aria-label="Kategorija">
+        <select class="field" id="priority" aria-label="Prioritet">
+          <option value="nizak">Nizak prioritet</option>
+          <option value="srednji" selected>Srednji prioritet</option>
+          <option value="visok">Visok prioritet</option>
+        </select>
+      </div>
+      <button class="cta" type="submit">
+        <span class="circle" aria-hidden="true">→</span>
+        <span class="caps">Dodaj<br>zadatak</span>
+      </button>
+    </form>
+
+    <section id="zadaci" aria-label="Popis zadataka">
+      <div class="bar">
+        <div class="filters caps" role="group" aria-label="Filter zadataka">
+          <button class="tab" data-filter="all" aria-pressed="true">Svi</button>
+          <button class="tab" data-filter="active" aria-pressed="false">Aktivni</button>
+          <button class="tab" data-filter="done" aria-pressed="false">Završeni</button>
+        </div>
+        <span class="count caps" id="count" aria-live="polite"></span>
+      </div>
+      <ul id="list"></ul>
+      <button class="clear caps" id="clear" type="button" hidden>Obriši završene</button>
+    </section>
+  </div>
+
+  <footer id="autor">
+    <div class="credit caps">
+      <a href="https://github.com/NoaHusic-dev" target="_blank" rel="noopener">github.com/NoaHusic-dev</a>
+      <span>&copy; 2026</span>
+    </div>
+  </footer>
+</main>
+
+<script>
+(() => {
+  const KEY = "todo.zadaci.v1";
+  const PRIO = { visok: "Visok prioritet", srednji: "Srednji prioritet", nizak: "Nizak prioritet" };
+  const $ = (id) => document.getElementById(id);
+  const list = $("list");
+  let todos = load();
+  let filter = "all";
+
+  function load() {
+    try { const d = JSON.parse(localStorage.getItem(KEY)); return Array.isArray(d) ? d : []; }
+    catch { return []; }
+  }
+  function save() { try { localStorage.setItem(KEY, JSON.stringify(todos)); } catch {} }
+
+  function counts() {
+    const left = todos.filter(t => !t.done).length;
+    $("count").textContent = todos.length ? `Preostalo ${left}/${todos.length}` : "";
+    $("clear").hidden = !todos.some(t => t.done);
+  }
+
+  function render() {
+    const visible = todos.filter(t => filter === "all" ? true : filter === "done" ? t.done : !t.done);
+    list.replaceChildren();
+    if (!visible.length) {
+      const li = document.createElement("li");
+      li.className = "empty";
+      li.textContent = todos.length ? "Nema zadataka u ovom prikazu." : "Još nema zadataka. Upiši prvi iznad.";
+      list.append(li);
+    }
+    for (const t of visible) {
+      const li = document.createElement("li");
+      li.className = t.done ? "done" : "";
+      li.dataset.id = t.id;
+
+      const cb = document.createElement("input");
+      cb.type = "checkbox"; cb.className = "check"; cb.checked = t.done;
+      cb.setAttribute("aria-label", "Završeno: " + t.title);
+
+      const body = document.createElement("div"); body.className = "body";
+      const text = document.createElement("div"); text.className = "text"; text.textContent = t.title;
+      const meta = document.createElement("div"); meta.className = "meta caps";
+      const p = document.createElement("span"); p.className = "prio " + t.priority; p.textContent = PRIO[t.priority];
+      meta.append(p);
+      if (t.category) { const c = document.createElement("span"); c.textContent = t.category; meta.append(c); }
+      body.append(text, meta);
+
+      const del = document.createElement("button");
+      del.className = "del"; del.type = "button"; del.textContent = "×";
+      del.setAttribute("aria-label", "Obriši zadatak: " + t.title);
+
+      li.append(cb, body, del);
+      list.append(li);
+    }
+    counts();
+  }
+
+  $("form").addEventListener("submit", (e) => {
+    e.preventDefault();
+    const title = $("title").value.trim();
+    if (!title) return;
+    todos.unshift({
+      id: Date.now().toString(36) + Math.random().toString(36).slice(2, 6),
+      title, category: $("category").value.trim(), priority: $("priority").value, done: false
+    });
+    save(); render();
+    $("title").value = ""; $("category").value = ""; $("title").focus();
+  });
+
+  list.addEventListener("click", (e) => {
+    const li = e.target.closest("li[data-id]");
+    if (!li) return;
+    const t = todos.find(x => x.id === li.dataset.id);
+    if (e.target.matches(".check")) {
+      t.done = e.target.checked; save();
+      if (filter === "all") { li.classList.toggle("done", t.done); counts(); } else render();
+    } else if (e.target.matches(".del")) {
+      li.classList.add("removing");
+      setTimeout(() => { todos = todos.filter(x => x.id !== t.id); save(); render(); }, 200);
+    }
+  });
+
+  document.querySelector(".filters").addEventListener("click", (e) => {
+    const b = e.target.closest("[data-filter]");
+    if (!b) return;
+    filter = b.dataset.filter;
+    document.querySelectorAll("[data-filter]").forEach(x => x.setAttribute("aria-pressed", String(x === b)));
+    render();
+  });
+
+  $("clear").addEventListener("click", () => { todos = todos.filter(t => !t.done); save(); render(); });
+  window.addEventListener("storage", (e) => { if (e.key === KEY) { todos = load(); render(); } });
+
+  render();
+})();
+</script>
+</body>
+</html>
