@@ -17,6 +17,7 @@
     --cols: 9;
   }
   * { box-sizing: border-box; }
+  [hidden] { display: none !important; }
   html { scroll-behavior: smooth; }
   body {
     margin: 0; background: var(--bg); color: var(--ink); font-family: var(--sans);
@@ -36,6 +37,8 @@
     display: flex; align-items: center; justify-content: space-between; gap: 16px;
   }
   .logo { font-family: var(--label); font-weight: 700; font-size: 1.5rem; letter-spacing: .01em; text-decoration: none; }
+  .account { display: flex; align-items: center; gap: 14px; }
+  .account-email { max-width: 240px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
   nav { display: flex; gap: clamp(18px, 4vw, 66px); }
   nav a { text-decoration: none; padding: 6px 0; position: relative; }
   nav a::after { content: ""; position: absolute; left: 0; bottom: 0; height: 1px; width: 0; background: var(--ink); transition: width .25s; }
@@ -135,11 +138,20 @@
   .del { flex: none; width: 36px; height: 36px; border-radius: 50%; border: 1px solid transparent; background: none; color: var(--muted); font-size: 1.2rem; line-height: 1; cursor: pointer; transition: all .18s; }
   .edit-form { display: grid; flex: 1; min-width: 0; gap: 14px; }
   .edit-form .field { font-size: 1rem; }
-  .edit-actions, .tools { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; }
+  .edit-actions { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; }
   .tool-button { padding: 9px 14px; font: inherit; }
-  .tools { justify-content: flex-start; margin: 0 0 22px -12px; }
   .tool-status { min-height: 1.5em; margin: 0 0 10px; color: var(--muted); font-size: .95rem; }
   .tool-status:empty { display: none; }
+  .auth-card { width: min(520px, 100%); margin: auto; }
+  .auth-card h1 { margin-top: 0; font-size: clamp(2.5rem, 6vw, 4.5rem); }
+  .auth-card p { color: var(--muted); font-size: 1.1rem; line-height: 1.6; }
+  .auth-privacy { display: inline-block; margin-top: 12px; }
+  .auth-button { display: inline-flex; align-items: center; gap: 12px; min-height: 52px; padding: 12px 20px; border: 1px solid var(--ink); border-radius: 28px; background: var(--ink); color: var(--bg); font: 600 1rem var(--sans); cursor: pointer; }
+  .auth-button:hover:not(:disabled) { background: transparent; color: var(--ink); }
+  .auth-button:disabled { opacity: .65; cursor: wait; }
+  .account .tool-button { min-height: 36px; }
+  .migration { display: flex; flex-wrap: wrap; align-items: center; gap: 12px; margin: 20px 0; padding: 14px; border: 1px solid var(--grid); }
+  .migration p { margin: 0; color: var(--muted); }
   dialog { width: min(540px, calc(100% - 32px)); max-height: min(80vh, 680px); overflow: auto; padding: 28px; border: 1px solid var(--ink); background: var(--bg); color: var(--ink); font: inherit; }
   dialog[open] { animation: dialog-in .22s ease-out both; }
   dialog[open].closing { animation: dialog-out .18s ease-in both; }
@@ -175,7 +187,6 @@
     #zadaci { display: flex; flex: 1; flex-direction: column; min-height: 0; }
     #list { flex: 1; min-height: 0; overflow-y: auto; overscroll-behavior: contain; }
     footer { padding-top: 18px; }
-    .tools { justify-content: flex-start; gap: 8px; margin: 0 0 16px -12px; }
     .tool-button { min-height: 38px; padding: 7px 10px; }
     .tool-status { margin-bottom: 4px; }
   }
@@ -204,7 +215,6 @@
     .circle { width: 36px; height: 36px; }
     .bar { margin-top: 6px; }
     footer { padding-top: 4px; }
-    .tools { gap: 5px; margin: 0 0 10px -8px; }
     .tool-button { min-height: 30px; padding: 5px 8px; }
   }
   @media (max-width: 720px) {
@@ -238,7 +248,6 @@
     .actions { flex-direction: column; }
     .move { min-height: 46px; padding: 9px; }
     .edit { min-height: 46px; padding: 9px; }
-    .tools { justify-content: flex-start; }
     dialog { padding: 22px; text-align: left; }
     .clear { padding: 12px 0; }
     .credit { flex-direction: column; align-items: center; gap: 10px; }
@@ -251,14 +260,32 @@
 <body>
 <header>
   <a class="logo" href="#">NoaHusic-dev</a>
-  <nav class="caps" aria-label="Glavna navigacija">
+  <div class="account" id="account" hidden>
+    <span class="account-email" id="user-email"></span>
+    <button class="tool-button caps" id="sign-out" type="button">Odjava</button>
+  </div>
+  <nav class="caps" id="github-nav" aria-label="Glavna navigacija">
     <a href="https://github.com/NoaHusic-dev" target="_blank" rel="noopener">GitHub</a>
   </nav>
 </header>
 
-<main class="frame">
+<main class="frame" id="auth-screen">
+  <section class="auth-card" aria-labelledby="auth-title">
+    <h1 id="auth-title">Zadaci i bilješke<span>na jednom mjestu</span></h1>
+    <p>Prijavi se Google računom i pristupi svojim zadacima i bilješkama s različitih uređaja.</p>
+    <button class="auth-button" id="sign-in" type="button" disabled>Učitavam prijavu…</button>
+    <p class="tool-status" id="auth-status" role="status" aria-live="polite">Povezivanje s Firebaseom…</p>
+    <a class="auth-privacy" href="privatnost.html">Pravila privatnosti</a>
+  </section>
+</main>
+
+<main class="frame" id="app-shell" hidden>
 
   <div class="content">
+    <section class="migration" id="migration" hidden>
+      <p id="migration-message"></p>
+      <button class="tool-button" id="migration-button" type="button">Prenesi u račun</button>
+    </section>
     <h1>Zadaci i bilješke<span>na jednom mjestu</span></h1>
 
     <div class="views caps" role="group" aria-label="Prikaz sadržaja">
@@ -298,46 +325,45 @@
   </div>
 
   <footer id="autor">
-    <div class="tools" aria-label="Pomoć i izvoz">
-      <button class="tool-button caps" id="help-open" type="button">Kako koristiti?</button>
-      <button class="tool-button caps" id="share" type="button">Podijeli u Bilješke</button>
-      <button class="tool-button caps" id="backup" type="button">Preuzmi kopiju</button>
-      <button class="tool-button caps" id="import-open" type="button">Uvezi iz datoteke</button>
-      <input id="import-file" type="file" accept=".txt,.json,text/plain,application/json" hidden>
-    </div>
     <p class="tool-status" id="tool-status" role="status" aria-live="polite"></p>
     <div class="credit caps">
       <a href="https://github.com/NoaHusic-dev" target="_blank" rel="noopener">github.com/NoaHusic-dev</a>
+      <a href="privatnost.html">Pravila privatnosti</a>
       <span>&copy; 2026</span>
     </div>
   </footer>
 </main>
 
-<dialog id="help-dialog" aria-labelledby="help-title">
-  <h2 id="help-title">Kako koristiti TODO</h2>
-  <ul>
-    <li>Dodaj zadatke ili bilješke; zadatke možeš označiti kao završene, urediti ili premjestiti u Bilješke.</li>
-    <li>Podaci ostaju u ovom pregledniku i na ovom uređaju. Nakon otvaranja aplikacija radi i bez interneta.</li>
-    <li>Izvezi kopiju za prijenos ili podijeli popis s aplikacijom Bilješke.</li>
-  </ul>
-  <button class="tool-button dialog-close" id="help-close" type="button">Zatvori</button>
-</dialog>
+<script type="module">
+const $ = (id) => document.getElementById(id);
+const authStatus = $("auth-status");
+const setStatus = (message) => { $("tool-status").textContent = message; };
 
-<script>
-(() => {
-  const KEY = "todo.zadaci.v1";
+try {
+  const [appSdk, authSdk, firestoreSdk] = await Promise.all([
+    import("https://www.gstatic.com/firebasejs/11.10.0/firebase-app.js"),
+    import("https://www.gstatic.com/firebasejs/11.10.0/firebase-auth.js"),
+    import("https://www.gstatic.com/firebasejs/11.10.0/firebase-firestore.js")
+  ]);
+  const firebaseConfig = {
+    apiKey: "AIzaSyBB9Yhm_SAge2QsQ7V8TBY2_cwY7zuVMwc",
+    authDomain: "todo-2fff8.firebaseapp.com",
+    projectId: "todo-2fff8",
+    appId: "1:479116317561:web:d6b8c1d628db0d9ea395a8"
+  };
+  const app = appSdk.initializeApp(firebaseConfig);
+  const auth = authSdk.getAuth(app);
+  const db = firestoreSdk.getFirestore(app);
+  const googleProvider = new authSdk.GoogleAuthProvider();
   const PRIO = { visok: "Visok prioritet", srednji: "Srednji prioritet", nizak: "Nizak prioritet" };
-  const $ = (id) => document.getElementById(id);
   const list = $("list");
-  let todos = load();
+  let todos = [];
   let filter = "all";
   let view = "tasks";
-
-  function load() {
-    try { const d = JSON.parse(localStorage.getItem(KEY)); return Array.isArray(d) ? d : []; }
-    catch { return []; }
-  }
-  function save() { try { localStorage.setItem(KEY, JSON.stringify(todos)); } catch {} }
+  let currentUser = null;
+  let itemsRef = null;
+  let unsubscribeItems = null;
+  let legacyItems = [];
 
   function counts() {
     const items = todos.filter(t => view === "notes" ? t.type === "note" : t.type !== "note");
@@ -413,23 +439,138 @@
     counts();
   }
 
-  $("form").addEventListener("submit", (e) => {
-    e.preventDefault();
-    const title = $("title").value.trim();
-    if (!title) return;
-    const item = {
-      id: Date.now().toString(36) + Math.random().toString(36).slice(2, 6),
-      type: view === "notes" ? "note" : "task",
-      title, category: $("category").value.trim(), done: false
-    };
-    if (view === "notes") item.body = $("note-body").value.trim();
-    else item.priority = $("priority").value;
-    todos.unshift(item);
-    save(); render();
-    $("title").value = ""; $("category").value = ""; $("note-body").value = ""; $("title").focus();
+  function showError(action, error) {
+    console.error(action, error);
+    const message = `${action}: ${error.message || error}`;
+    if ($("app-shell").hidden) authStatus.textContent = message;
+    else setStatus(message);
+  }
+
+  function itemDocument(id) {
+    return firestoreSdk.doc(db, "users", currentUser.uid, "items", id);
+  }
+
+  function inspectLegacyItems() {
+    const panel = $("migration");
+    try {
+      const saved = localStorage.getItem("todo.zadaci.v1");
+      legacyItems = saved ? JSON.parse(saved) : [];
+      if (!Array.isArray(legacyItems)) throw new Error("Stari podaci nisu u očekivanom formatu.");
+      legacyItems = legacyItems.filter(item => item && typeof item.title === "string" && item.title.trim());
+      panel.hidden = legacyItems.length === 0;
+      $("migration-message").textContent = legacyItems.length
+        ? `Pronađeno je ${legacyItems.length} lokalnih stavki. Možeš ih prenijeti u svoj račun.`
+        : "";
+    } catch (error) {
+      panel.hidden = true;
+      showError("Stare podatke nije moguće pročitati", error);
+    }
+  }
+
+  $("migration-button").addEventListener("click", async () => {
+    if (!currentUser || !legacyItems.length) return;
+    if (!confirm(`Prenijeti ${legacyItems.length} starih stavki u račun ${currentUser.email || ""}?`)) return;
+    $("migration-button").disabled = true;
+    try {
+      for (let offset = 0; offset < legacyItems.length; offset += 400) {
+        const batch = firestoreSdk.writeBatch(db);
+        const chunk = legacyItems.slice(offset, offset + 400);
+        const writes = await Promise.all(chunk.map(async (item, index) => {
+          const legacyId = encodeURIComponent(String(item.id || "item"));
+          const reference = firestoreSdk.doc(itemsRef, `legacy_${legacyId}_${offset + index}`);
+          if ((await firestoreSdk.getDoc(reference)).exists()) return null;
+          const type = item.type === "note" ? "note" : "task";
+          const data = {
+            type,
+            title: item.title.trim().slice(0, 140),
+            category: typeof item.category === "string" ? item.category.slice(0, 24) : "",
+            createdAt: firestoreSdk.serverTimestamp(),
+            updatedAt: firestoreSdk.serverTimestamp()
+          };
+          if (type === "note") data.body = typeof item.body === "string" ? item.body.slice(0, 2000) : "";
+          else {
+            data.done = Boolean(item.done);
+            data.priority = PRIO[item.priority] ? item.priority : "srednji";
+          }
+          return { reference, data };
+        }));
+        writes.filter(Boolean).forEach(write => batch.set(write.reference, write.data));
+        if (writes.some(Boolean)) await batch.commit();
+      }
+      localStorage.removeItem("todo.zadaci.v1");
+      legacyItems = [];
+      $("migration").hidden = true;
+      setStatus("Stari zadaci i bilješke preneseni su u tvoj račun.");
+    } catch (error) {
+      showError("Prijenos starih stavki nije uspio", error);
+    } finally {
+      $("migration-button").disabled = false;
+    }
   });
 
-  list.addEventListener("click", (e) => {
+  $("sign-in").addEventListener("click", async () => {
+    const button = $("sign-in");
+    button.disabled = true;
+    authStatus.textContent = "Otvaram Google prijavu…";
+    try {
+      if (matchMedia("(max-width: 720px)").matches) {
+        await authSdk.signInWithRedirect(auth, googleProvider);
+      } else {
+        await authSdk.signInWithPopup(auth, googleProvider);
+      }
+    } catch (error) {
+      if (error.code === "auth/popup-blocked" || error.code === "auth/operation-not-supported-in-this-environment") {
+        try {
+          await authSdk.signInWithRedirect(auth, googleProvider);
+          return;
+        } catch (redirectError) {
+          showError("Google prijava nije uspjela", redirectError);
+        }
+      } else {
+        showError("Google prijava nije uspjela", error);
+      }
+      button.disabled = false;
+    }
+  });
+
+  $("sign-out").addEventListener("click", async () => {
+    try {
+      await authSdk.signOut(auth);
+      setStatus("");
+    } catch (error) {
+      showError("Odjava nije uspjela", error);
+    }
+  });
+
+  $("form").addEventListener("submit", async (e) => {
+    e.preventDefault();
+    const title = $("title").value.trim();
+    if (!title || !currentUser || !itemsRef) return;
+    const item = {
+      type: view === "notes" ? "note" : "task",
+      title,
+      category: $("category").value.trim(),
+      createdAt: firestoreSdk.serverTimestamp(),
+      updatedAt: firestoreSdk.serverTimestamp()
+    };
+    if (view === "notes") item.body = $("note-body").value.trim();
+    else {
+      item.priority = $("priority").value;
+      item.done = false;
+    }
+    try {
+      await firestoreSdk.addDoc(itemsRef, item);
+      $("title").value = "";
+      $("category").value = "";
+      $("note-body").value = "";
+      $("title").focus();
+      setStatus("");
+    } catch (error) {
+      showError("Spremanje nije uspjelo", error);
+    }
+  });
+
+  list.addEventListener("click", async (e) => {
     const li = e.target.closest("li[data-id]");
     if (!li) return;
     const t = todos.find(x => x.id === li.dataset.id);
@@ -480,32 +621,70 @@
     } else if (e.target.matches(".edit-form button[type=button]")) {
       render();
     } else if (e.target.matches(".check")) {
-      t.done = e.target.checked; save();
-      if (filter === "all") { li.classList.toggle("done", t.done); counts(); } else render();
+      try {
+        await firestoreSdk.updateDoc(itemDocument(t.id), {
+          done: e.target.checked,
+          updatedAt: firestoreSdk.serverTimestamp()
+        });
+      } catch (error) {
+        showError("Ažuriranje zadatka nije uspjelo", error);
+      }
     } else if (e.target.matches(".move")) {
-      t.type = "note";
-      t.body = "";
-      delete t.done;
-      delete t.priority;
-      save(); render();
+      try {
+        await firestoreSdk.updateDoc(itemDocument(t.id), {
+          type: "note",
+          body: "",
+          done: firestoreSdk.deleteField(),
+          priority: firestoreSdk.deleteField(),
+          updatedAt: firestoreSdk.serverTimestamp()
+        });
+      } catch (error) {
+        showError("Premještanje u Bilješke nije uspjelo", error);
+      }
     } else if (e.target.matches(".del")) {
       li.classList.add("removing");
-      setTimeout(() => { todos = todos.filter(x => x.id !== t.id); save(); render(); }, 200);
+      await new Promise(resolve => setTimeout(resolve, 200));
+      try {
+        await firestoreSdk.deleteDoc(itemDocument(t.id));
+      } catch (error) {
+        li.classList.remove("removing");
+        showError("Brisanje nije uspjelo", error);
+      }
     }
   });
 
-  list.addEventListener("submit", (e) => {
+  list.addEventListener("submit", async (e) => {
     if (!e.target.matches(".edit-form")) return;
     e.preventDefault();
     const li = e.target.closest("li[data-id]");
     const item = todos.find(x => x.id === li.dataset.id);
     if (!item) return;
     const data = new FormData(e.target);
-    item.title = data.get("title").trim();
-    item.category = data.get("category").trim();
-    if (item.type === "note") item.body = data.get("body").trim();
-    else item.priority = data.get("priority");
-    save(); render();
+    const updated = {
+      title: data.get("title").trim(),
+      category: data.get("category").trim(),
+      updatedAt: firestoreSdk.serverTimestamp()
+    };
+    if (item.type === "note") updated.body = data.get("body").trim();
+    else updated.priority = data.get("priority");
+    try {
+      await firestoreSdk.updateDoc(itemDocument(item.id), updated);
+    } catch (error) {
+      showError("Uređivanje nije uspjelo", error);
+    }
+  });
+
+  $("clear").addEventListener("click", async () => {
+    const completed = todos.filter(item => item.type !== "note" && item.done);
+    try {
+      for (let offset = 0; offset < completed.length; offset += 400) {
+        const batch = firestoreSdk.writeBatch(db);
+        completed.slice(offset, offset + 400).forEach(item => batch.delete(itemDocument(item.id)));
+        await batch.commit();
+      }
+    } catch (error) {
+      showError("Brisanje završenih zadataka nije uspjelo", error);
+    }
   });
 
   document.querySelector(".views").addEventListener("click", (e) => {
@@ -534,168 +713,48 @@
     render();
   });
 
-  $("clear").addEventListener("click", () => { todos = todos.filter(t => !t.done); save(); render(); });
-  window.addEventListener("storage", (e) => { if (e.key === KEY) { todos = load(); render(); } });
+  $("sign-in").disabled = false;
+  $("sign-in").textContent = "Nastavi s Googleom";
+  authStatus.textContent = "Tvoji podaci sinkroniziraju se uz tvoj Google račun.";
 
-  function exportText() {
-    const tasks = todos.filter(t => t.type !== "note");
-    const notes = todos.filter(t => t.type === "note");
-    const taskLines = tasks.length
-      ? tasks.map(t => `- [${t.done ? "x" : " "}] ${JSON.stringify(t.title)}${t.category ? ` | Kategorija: ${JSON.stringify(t.category)}` : ""}`).join("\n")
-      : "- Nema zadataka.";
-    const noteLines = notes.length
-      ? notes.map(t => `- ${JSON.stringify(t.title)}${t.category ? ` | Kategorija: ${JSON.stringify(t.category)}` : ""}${t.body ? `\n${t.body.split("\n").map(line => `  ${line}`).join("\n")}` : ""}`).join("\n")
-      : "- Nema bilješki.";
-    return `TODO Web aplikacija\nhttps://github.com/NoaHusic-dev\n\nZadaci:\n${taskLines}\n\nBilješke:\n${noteLines}`;
-  }
-
-  function downloadFile(name, content, type) {
-    const url = URL.createObjectURL(new Blob([content], { type }));
-    const link = document.createElement("a");
-    link.href = url; link.download = name;
-    document.body.append(link); link.click(); link.remove();
-    setTimeout(() => URL.revokeObjectURL(url), 1000);
-  }
-
-  const helpDialog = $("help-dialog");
-  let helpClosing = false;
-  function closeHelp() {
-    if (!helpDialog.open || helpClosing) return;
-    helpClosing = true;
-    helpDialog.classList.add("closing");
-    const delay = matchMedia("(prefers-reduced-motion: reduce)").matches ? 0 : 200;
-    setTimeout(() => {
-      if (helpDialog.open) helpDialog.close();
-      helpDialog.classList.remove("closing");
-      helpClosing = false;
-    }, delay);
-  }
-
-  $("help-open").addEventListener("click", () => {
-    if (!helpDialog.open) helpDialog.showModal();
+  authSdk.getRedirectResult(auth).catch(error => {
+    showError("Google prijava nije uspjela", error);
   });
-  $("help-close").addEventListener("click", closeHelp);
-  helpDialog.addEventListener("cancel", (e) => {
-    e.preventDefault();
-    closeHelp();
-  });
-  document.addEventListener("keydown", (e) => {
-    if (e.key === "Escape" && helpDialog.open) {
-      e.preventDefault();
-      closeHelp();
+
+  authSdk.onAuthStateChanged(auth, user => {
+    currentUser = user;
+    if (unsubscribeItems) unsubscribeItems();
+    unsubscribeItems = null;
+    todos = [];
+    render();
+    $("auth-screen").hidden = Boolean(user);
+    $("app-shell").hidden = !user;
+    $("account").hidden = !user;
+    $("github-nav").hidden = Boolean(user);
+    if (!user) {
+      itemsRef = null;
+      $("migration").hidden = true;
+      $("sign-in").disabled = false;
+      return;
     }
-  }, true);
-  helpDialog.addEventListener("click", (e) => {
-    if (e.target === helpDialog) closeHelp();
+    $("user-email").textContent = user.displayName || user.email || "Google račun";
+    itemsRef = firestoreSdk.collection(db, "users", user.uid, "items");
+    inspectLegacyItems();
+    unsubscribeItems = firestoreSdk.onSnapshot(itemsRef, snapshot => {
+      todos = snapshot.docs
+        .map(document => ({ id: document.id, ...document.data() }))
+        .sort((a, b) => (b.createdAt?.toMillis?.() || 0) - (a.createdAt?.toMillis?.() || 0));
+      render();
+    }, error => {
+      showError("Učitavanje zadataka i bilješki nije uspjelo", error);
+    });
   });
-  $("share").addEventListener("click", async () => {
-    const text = exportText();
-    $("tool-status").textContent = "";
-    if (navigator.share) {
-      try {
-        await navigator.share({ title: "TODO Web aplikacija", text });
-        $("tool-status").textContent = "Sadržaj je podijeljen.";
-      } catch (error) {
-        if (error.name === "AbortError") return;
-        $("tool-status").textContent = "Dijeljenje nije uspjelo; preuzimam tekstualnu datoteku.";
-        downloadFile("todo-biljeske.txt", text, "text/plain;charset=utf-8");
-      }
-    } else {
-      $("tool-status").textContent = "Dijeljenje nije dostupno; preuzimam tekstualnu datoteku.";
-      downloadFile("todo-biljeske.txt", text, "text/plain;charset=utf-8");
-    }
-  });
-  $("backup").addEventListener("click", () => {
-    downloadFile("todo-kopija.json", JSON.stringify({ version: 1, items: todos }, null, 2), "application/json");
-    $("tool-status").textContent = "Sigurnosna kopija je preuzeta.";
-  });
-  $("import-open").addEventListener("click", () => $("import-file").click());
-  $("import-file").addEventListener("change", async (e) => {
-    const file = e.target.files[0];
-    if (!file) return;
-    try {
-      const content = (await file.text()).replace(/^\uFEFF/, "").replace(/\r\n?/g, "\n");
-      let imported;
-      if (file.name.toLowerCase().endsWith(".json")) {
-        const data = JSON.parse(content);
-        const entries = Array.isArray(data) ? data : data.items;
-        if (!Array.isArray(entries)) throw new Error("JSON datoteka ne sadrži popis stavki.");
-        imported = entries.filter(item => item && typeof item.title === "string")
-          .map(item => ({
-            ...item,
-            id: Date.now().toString(36) + Math.random().toString(36).slice(2, 8),
-            type: item.type === "note" ? "note" : "task",
-            title: item.title.trim(),
-            category: typeof item.category === "string" ? item.category : "",
-            done: item.type === "note" ? false : Boolean(item.done),
-            ...(item.type === "note"
-              ? { body: typeof item.body === "string" ? item.body : "" }
-              : { priority: PRIO[item.priority] ? item.priority : "srednji" })
-          })).filter(item => item.title);
-      } else {
-        if (!content.trim()) throw new Error("TXT datoteka je prazna.");
-        const tasksMarker = "\nZadaci:\n";
-        const notesMarker = "\nBilješke:\n";
-        const tasksStart = content.indexOf(tasksMarker);
-        const notesStart = content.indexOf(notesMarker);
-        const makeId = () => Date.now().toString(36) + Math.random().toString(36).slice(2, 8);
-        const withCategory = (label) => {
-          const categoryMarker = " | Kategorija: ";
-          const categoryStart = label.lastIndexOf(categoryMarker);
-          const titleValue = categoryStart >= 0 ? label.slice(0, categoryStart) : label;
-          try {
-            const title = JSON.parse(titleValue);
-            const category = categoryStart >= 0 ? JSON.parse(label.slice(categoryStart + categoryMarker.length)) : "";
-            if (typeof title === "string" && typeof category === "string") return { title, category };
-          } catch {}
-          return { title: label, category: "" };
-        };
-        if (content.startsWith("TODO Web aplikacija\n") && tasksStart >= 0 && notesStart > tasksStart) {
-          imported = [];
-          const taskText = content.slice(tasksStart + tasksMarker.length, notesStart);
-          for (const line of taskText.split(/\r?\n/)) {
-            const match = /^- \[([ x])\] (.+)$/.exec(line);
-            if (!match) continue;
-            const fields = withCategory(match[2]);
-            imported.push({
-              id: makeId(), type: "task", ...fields,
-              priority: "srednji", done: match[1] === "x"
-            });
-          }
-          const noteText = content.slice(notesStart + notesMarker.length);
-          for (const entry of noteText.split(/\r?\n(?=- )/)) {
-            const lines = entry.split(/\r?\n/);
-            const match = /^- (.+)$/.exec(lines[0]);
-            if (!match) continue;
-            const fields = withCategory(match[1]);
-            imported.push({
-              id: makeId(), type: "note", ...fields,
-              body: lines.slice(1).map(line => line.startsWith("  ") ? line.slice(2) : line).join("\n")
-            });
-          }
-        } else {
-          imported = [{
-            id: makeId(),
-            type: "note",
-            title: file.name.replace(/\.txt$/i, "").slice(0, 140) || "Uvezena bilješka",
-            body: content,
-            category: ""
-          }];
-        }
-      }
-      if (!imported.length) throw new Error("U datoteci nema valjanih stavki za uvoz.");
-      todos = [...imported, ...todos];
-      save(); render();
-      $("tool-status").textContent = `Uvezeno stavki: ${imported.length}.`;
-    } catch (error) {
-      $("tool-status").textContent = `Uvoz nije uspio: ${error.message}`;
-    } finally {
-      e.target.value = "";
-    }
-  });
-
-  render();
-})();
+} catch (error) {
+  console.error("Firebase initialization failed", error);
+  $("sign-in").disabled = true;
+  $("sign-in").textContent = "Prijava nije dostupna";
+  authStatus.textContent = `Firebase se nije mogao učitati: ${error.message || error}`;
+}
 </script>
 </body>
 </html>

@@ -1,0 +1,51 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+    function ownsUserData(userId) {
+      return request.auth != null && request.auth.uid == userId;
+    }
+
+    function validItem(data) {
+      return data.keys().hasOnly([
+          'type', 'title', 'category', 'done', 'priority', 'body',
+          'createdAt', 'updatedAt'
+        ])
+        && data.keys().hasAll([
+          'type', 'title', 'category', 'createdAt', 'updatedAt'
+        ])
+        && data.title is string
+        && data.title.size() > 0
+        && data.title.size() <= 560
+        && data.category is string
+        && data.category.size() <= 96
+        && data.createdAt is timestamp
+        && data.updatedAt is timestamp
+        && (
+          (
+            data.type == 'note'
+            && data.keys().hasAll(['body'])
+            && data.body is string
+            && data.body.size() <= 8000
+            && !data.keys().hasAny(['done', 'priority'])
+          )
+          ||
+          (
+            data.type == 'task'
+            && data.keys().hasAll(['done', 'priority'])
+            && data.done is bool
+            && data.priority in ['nizak', 'srednji', 'visok']
+            && !data.keys().hasAny(['body'])
+          )
+        );
+    }
+
+    match /users/{userId}/items/{itemId} {
+      allow read, delete: if ownsUserData(userId);
+      allow create: if ownsUserData(userId) && validItem(request.resource.data);
+      allow update: if ownsUserData(userId)
+        && validItem(request.resource.data)
+        && request.resource.data.createdAt == resource.data.createdAt;
+    }
+  }
+}

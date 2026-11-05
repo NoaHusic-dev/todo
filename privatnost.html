@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="hr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="light">
+  <title>Pravila privatnosti — TODO</title>
+  <style>
+    :root {
+      color-scheme: light;
+      font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+      color: #333133;
+      background: #347fc4;
+    }
+    * { box-sizing: border-box; }
+    body { margin: 0; padding: 24px; }
+    main { width: min(820px, 100%); margin: 24px auto; padding: clamp(24px, 6vw, 56px); background: rgba(255,255,255,.08); border: 1px solid rgba(255,255,255,.25); line-height: 1.65; }
+    h1 { margin-top: 0; font-size: clamp(2rem, 6vw, 3.5rem); line-height: 1; letter-spacing: -.04em; }
+    h2 { margin-top: 2rem; font-size: 1.25rem; }
+    a { color: inherit; text-underline-offset: .2em; }
+    .back { display: inline-block; margin-bottom: 24px; }
+    .updated { opacity: .8; }
+    @media (max-width: 600px) { body { padding: 10px; } main { margin: 10px auto; } }
+  </style>
+</head>
+<body>
+  <main>
+    <a class="back" href="index.html">← Povratak u TODO</a>
+    <h1>Pravila privatnosti</h1>
+    <p class="updated">Zadnje ažuriranje: 5. studenog 2026.</p>
+
+    <h2>1. Voditelj obrade</h2>
+    <p>Voditelj obrade osobnih podataka je Noa Husić, vlasnik TODO web aplikacije. Za pitanja, zahtjeve ili ostvarivanje svojih prava javi se putem <a href="https://noahusicdev.site/kontakt.html">obrasca za kontakt</a>.</p>
+
+    <h2>2. Koje podatke obrađuje aplikacija</h2>
+    <p>Za Google prijavu Firebase Authentication obrađuje identifikator Google računa (UID) te podatke profila koje Google dostavi aplikaciji, kao što su ime, adresa e-pošte i profilna slika, ako su dostupni.</p>
+    <p>U Firebase Cloud Firestore spremaju se tvoji zadaci i bilješke: naslovi, sadržaj bilješki, kategorije, prioritet, status dovršenosti i vrijeme izmjene. Sadržaj unosiš ti. Nemoj unositi podatke koji ti nisu potrebni, osobito osjetljive osobne podatke.</p>
+
+    <h2>3. Svrha i pravna osnova</h2>
+    <p>Podaci se koriste za prijavu, spremanje i sinkronizaciju tvojih zadataka i bilješki na uređajima na kojima se prijaviš istim Google računom. Pravna osnova je pružanje funkcija koje zatražiš korištenjem aplikacije; prijavu putem Googlea pokrećeš ti odabirom te mogućnosti.</p>
+
+    <h2>4. Usluge trećih strana i prijenos podataka</h2>
+    <p>Aplikacija koristi <a href="https://firebase.google.com/support/privacy">Google Firebase Authentication i Cloud Firestore</a> za prijavu i pohranu podataka. Google može obrađivati tehničke podatke poput IP adrese i podataka o uređaju radi pružanja i zaštite usluge. Podaci se pohranjuju u lokaciji Firestore baze odabranoj u postavkama Firebase projekta; Google može obrađivati određene tehničke podatke i izvan Europskog gospodarskog prostora u skladu sa svojim uvjetima i zaštitnim mehanizmima.</p>
+    <p>Stranica se poslužuje putem GitHub Pagesa, pa GitHub može obrađivati tehničke podatke potrebne za isporuku i sigurnost web-stranice. Podaci se ne prodaju i aplikacija ne koristi oglašivačke ni analitičke alate.</p>
+
+    <h2>5. Privatnost i sigurnost</h2>
+    <p>Svaki korisnik treba imati pristup samo svojim zapisima. Firestore pravila u datoteci <code>firestore.rules</code> ograničavaju pristup na prijavljenog korisnika čiji UID odgovara putanji podataka. Pravila moraju biti objavljena u Firebase konzoli prije korištenja baze. Nemoj koristiti bazu dok nisu postavljena odgovarajuća pravila.</p>
+    <p>Prijava se održava u pregledniku kako bi ostala aktivna. Aplikacija ne koristi kolačiće za praćenje.</p>
+
+    <h2>6. Čuvanje i brisanje podataka</h2>
+    <p>Podaci ostaju u Firestoreu dok ih ne izbrišeš u aplikaciji ili dok ne zatražiš brisanje računa i povezanih podataka. Odjava sama po sebi ne briše podatke. Za brisanje računa ili svih podataka pošalji zahtjev putem <a href="https://noahusicdev.site/kontakt.html">obrasca za kontakt</a>. Kopije koje pružatelj usluge čuva radi sigurnosti uklanjaju se prema njegovim pravilima čuvanja.</p>
+    <p>Stari podaci iz lokalne pohrane preglednika ne prenose se automatski. Ako aplikacija pronađe ranije spremljene zadatke ili bilješke, možeš zasebno potvrditi njihov prijenos na svoj račun.</p>
+
+    <h2>7. Tvoja prava</h2>
+    <p>Ovisno o primjenjivim propisima, možeš zatražiti pristup svojim podacima, njihov ispravak, brisanje ili ograničenje obrade, prenosivost podataka te se usprotiviti obradi kada za to postoje uvjeti. Ako se obrada temelji na privoli, možeš je povući bez utjecaja na zakonitost ranije obrade. Zahtjev pošalji putem <a href="https://noahusicdev.site/kontakt.html">obrasca za kontakt</a>.</a></p>
+  </main>
+</body>
+</html>
