@@ -3,17 +3,14 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>TODO</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@400;500;600;700&family=Space+Grotesk:wght@500;700&display=swap" rel="stylesheet">
+<title>Zadaci i bilješke</title>
 <style>
   :root {
-    --bg: #e9e7e8;
-    --ink: #1a1023;
-    --muted: #5e5469;
-    --grid: #b7b3b8;
-    --accent: #2b2bb8;
+    --bg: #347FC4;
+    --ink: #333133;
+    --muted: #0a0a0a;
+    --grid: #ffffff21;
+    --accent: #0a0a0a;
     --sans: "Hanken Grotesk", "Helvetica Neue", Helvetica, Arial, sans-serif;
     --label: "Space Grotesk", "Helvetica Neue", Helvetica, Arial, sans-serif;
     --gutter: 45px;
@@ -27,15 +24,18 @@
   }
   a { color: inherit; }
   :focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
+  button { -webkit-tap-highlight-color: transparent; transition: transform .16s ease, color .16s ease, background-color .16s ease, border-color .16s ease; }
+  button:hover:not(:disabled) { transform: translateY(-2px); }
+  button:active:not(:disabled) { transform: scale(.97); }
 
-  .caps { font-family: var(--label); font-size: .72rem; letter-spacing: .32em; text-transform: uppercase; font-weight: 500; }
+  .caps { font-family: var(--label); font-size: .82rem; letter-spacing: .2em; text-transform: uppercase; font-weight: 500; }
 
   /* zaglavlje */
   header {
-    margin: 0 var(--gutter); height: 62px; border-bottom: 1px solid var(--ink);
+    margin: 0 var(--gutter); height: 68px; border-bottom: 1px solid var(--ink);
     display: flex; align-items: center; justify-content: space-between; gap: 16px;
   }
-  .logo { font-family: var(--label); font-weight: 700; font-size: 1.3rem; letter-spacing: .01em; text-decoration: none; }
+  .logo { font-family: var(--label); font-weight: 700; font-size: 1.5rem; letter-spacing: .01em; text-decoration: none; }
   nav { display: flex; gap: clamp(18px, 4vw, 66px); }
   nav a { text-decoration: none; padding: 6px 0; position: relative; }
   nav a::after { content: ""; position: absolute; left: 0; bottom: 0; height: 1px; width: 0; background: var(--ink); transition: width .25s; }
@@ -43,44 +43,45 @@
 
   /* okvir s vertikalnim linijama */
   .frame {
-    position: relative; margin: 20px var(--gutter) 0; min-height: calc(100vh - 82px);
+    position: relative; margin: 14px var(--gutter) 0; min-height: calc(100svh - 82px);
     border-left: 1px solid var(--grid); border-right: 1px solid var(--grid);
     background-image: linear-gradient(to right, var(--grid) 1px, transparent 1px);
     background-size: calc(100% / var(--cols)) 100%;
-    padding: 24px clamp(20px, 5vw, 88px) 40px;
+    padding: 24px clamp(24px, 5vw, 88px) 28px;
     display: flex; flex-direction: column;
+    background-color: rgba(255, 255, 255, .035);
   }
-  .content { max-width: 760px; width: 100%; }
+  .content { max-width: 900px; width: 100%; }
 
   .eyebrow { line-height: 2.1; }
   .eyebrow::after { content: ""; display: block; width: 51px; height: 1px; background: var(--ink); margin-top: 18px; }
 
 
   h1 {
-    font-weight: 600; letter-spacing: -.055em; line-height: .98; margin: clamp(56px, 11vh, 120px) 0 0;
+    font-weight: 600; letter-spacing: -.055em; line-height: .98; margin: clamp(36px, 7vh, 86px) 0 0;
     font-size: clamp(2.9rem, 8.2vw, 6.4rem);
   }
   h1 span { display: block; color: var(--muted); }
 
   /* unos */
-  form { margin-top: clamp(44px, 8vh, 84px); display: grid; gap: 22px; }
+  form { margin-top: clamp(32px, 6vh, 64px); display: grid; gap: 18px; }
   .title-input, .field {
     background: transparent; border: 0; border-bottom: 1px solid var(--ink); border-radius: 0;
     color: var(--ink); font-family: var(--sans); padding: 10px 0; outline: none; width: 100%;
   }
-  .title-input { font-size: clamp(1.2rem, 3vw, 1.6rem); font-weight: 500; letter-spacing: -.02em; }
+  .title-input { font-size: clamp(1.35rem, 2.4vw, 1.8rem); font-weight: 500; letter-spacing: -.02em; }
   .title-input::placeholder, .field::placeholder { color: var(--muted); opacity: 1; }
   .title-input:focus, .field:focus { border-bottom-color: var(--accent); }
   .fields { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; }
-  .field { font-size: .95rem; }
+  .field { font-size: 1.05rem; }
   select.field { appearance: none; cursor: pointer;
     background-image: linear-gradient(45deg, transparent 50%, var(--ink) 50%), linear-gradient(135deg, var(--ink) 50%, transparent 50%);
     background-position: calc(100% - 9px) 55%, calc(100% - 4px) 55%; background-size: 5px 5px; background-repeat: no-repeat; }
 
-  .cta { display: inline-flex; align-items: center; gap: clamp(18px, 4vw, 52px); background: none; border: 0; padding: 0; cursor: pointer; color: var(--ink); width: fit-content; }
+  .cta { display: inline-flex; align-items: center; gap: clamp(18px, 4vw, 52px); background: none; border: 0; padding: 0; cursor: pointer; color: var(--ink); width: fit-content; transition: transform .16s ease; }
   .circle {
-    width: 71px; height: 71px; border-radius: 50%; border: 1px solid var(--ink);
-    display: grid; place-content: center; font-size: 1rem; line-height: 1;
+    width: 62px; height: 62px; border-radius: 50%; border: 1px solid var(--ink);
+    display: grid; place-content: center; font-size: 1.2rem; line-height: 1;
     transition: background .2s, color .2s, transform .2s;
   }
   .cta:hover .circle { background: var(--ink); color: var(--bg); transform: translateX(4px); }
@@ -88,53 +89,127 @@
   .cta .caps { line-height: 2.1; text-align: left; }
 
   /* filteri */
-  .bar { display: flex; flex-wrap: wrap; gap: 14px 24px; align-items: center; justify-content: space-between; margin-top: clamp(44px, 8vh, 80px); padding-bottom: 14px; border-bottom: 1px solid var(--ink); }
+  .bar { display: flex; flex-wrap: wrap; gap: 14px 24px; align-items: center; justify-content: space-between; margin-top: clamp(32px, 6vh, 64px); padding-bottom: 12px; border-bottom: 1px solid var(--ink); }
   .filters { display: flex; gap: clamp(14px, 3vw, 30px); }
-  .tab { background: none; border: 0; padding: 4px 0; cursor: pointer; color: var(--muted); position: relative; }
+  .filters[hidden] { display: none; }
+  .tab { background: none; border: 0; padding: 8px 0; cursor: pointer; color: var(--muted); position: relative; }
   .tab::after { content: ""; position: absolute; left: 0; bottom: -1px; height: 1px; width: 0; background: var(--ink); transition: width .25s; }
   .tab:hover, .tab[aria-pressed="true"] { color: var(--ink); }
   .tab[aria-pressed="true"]::after { width: calc(100% - .32em); }
   .count { color: var(--muted); }
   .count:empty { display: none; }
+  .views { display: flex; gap: 32px; margin-top: 28px; border-bottom: 1px solid var(--ink); }
+  .view-tab { background: none; border: 0; padding: 12px 0; cursor: pointer; color: var(--muted); position: relative; }
+  .view-tab[aria-pressed="true"] { color: var(--ink); }
+  .view-tab[aria-pressed="true"]::after { content: ""; position: absolute; left: 0; bottom: -1px; height: 1px; width: 100%; background: var(--ink); }
+  .fields.notes-mode { grid-template-columns: 1fr; }
+  .note-body { min-height: 100px; resize: vertical; }
 
   /* lista */
   ul { list-style: none; margin: 0; padding: 0; }
-  li { display: flex; align-items: center; gap: 18px; padding: 18px 0; border-bottom: 1px solid var(--grid); transition: opacity .2s, transform .2s; }
+  li { display: flex; align-items: center; gap: 18px; padding: 14px 0; border-bottom: 1px solid var(--grid); transition: opacity .2s, transform .2s; }
   li.removing { opacity: 0; transform: translateX(14px); }
   .check {
-    appearance: none; flex: none; width: 26px; height: 26px; margin: 0; border: 1px solid var(--ink); border-radius: 50%;
-    cursor: pointer; display: grid; place-content: center; background: transparent; transition: background .18s;
+    appearance: none; flex: none; width: 30px; height: 30px; margin: 0; border: 1px solid var(--ink); border-radius: 50%;
+    cursor: pointer; display: grid; place-content: center; background: transparent; transition: background .18s, transform .16s ease;
   }
   .check:hover { background: rgba(26, 16, 35, .1); }
   .check:checked { background: var(--ink); }
   .check:checked::after { content: ""; width: 6px; height: 11px; margin-top: -2px; border: solid var(--bg); border-width: 0 1.5px 1.5px 0; transform: rotate(45deg); }
   .body { flex: 1; min-width: 0; }
-  .text { font-size: 1.15rem; font-weight: 500; letter-spacing: -.02em; overflow-wrap: anywhere; position: relative; width: fit-content; max-width: 100%; transition: color .2s; }
+  .text { font-size: 1.3rem; font-weight: 500; letter-spacing: -.02em; overflow-wrap: anywhere; position: relative; width: fit-content; max-width: 100%; transition: color .2s; }
   .text::after { content: ""; position: absolute; left: 0; top: 55%; height: 1.5px; width: 0; background: currentColor; transition: width .28s ease; }
   li.done .text { color: var(--muted); }
   li.done .text::after { width: 100%; }
-  .meta { display: flex; flex-wrap: wrap; gap: 6px 18px; margin-top: 8px; color: var(--muted); font-size: .6rem; }
+  .meta { display: flex; flex-wrap: wrap; gap: 6px 18px; margin-top: 8px; color: var(--muted); font-size: .74rem; }
   .prio { display: inline-flex; align-items: center; gap: 8px; }
   .prio::before { content: ""; width: 7px; height: 7px; border-radius: 50%; background: var(--muted); }
   .prio.visok { color: var(--ink); } .prio.visok::before { background: var(--accent); }
   .prio.nizak::before { background: transparent; border: 1px solid var(--muted); }
+  .note-content { margin-top: 10px; white-space: pre-wrap; overflow-wrap: anywhere; color: var(--muted); }
+  .actions { display: flex; flex: none; align-items: center; gap: 4px; }
+  .move, .edit, .del, .tool-button { flex: none; min-height: 42px; border-radius: 22px; border: 1px solid transparent; background: none; color: var(--muted); cursor: pointer; transition: all .18s; }
+  .move { padding: 8px 12px; font-family: var(--sans); font-size: .92rem; }
+  .move:hover, .edit:hover, .del:hover, .tool-button:hover { border-color: var(--ink); color: var(--ink); }
+  .edit { padding: 8px 12px; font-family: var(--sans); font-size: .92rem; }
   .del { flex: none; width: 36px; height: 36px; border-radius: 50%; border: 1px solid transparent; background: none; color: var(--muted); font-size: 1.2rem; line-height: 1; cursor: pointer; transition: all .18s; }
-  .del:hover { border-color: var(--ink); color: var(--ink); }
-  .empty { display: block; padding: 34px 0; color: var(--muted); border-bottom: 1px solid var(--grid); }
+  .edit-form { display: grid; flex: 1; min-width: 0; gap: 14px; }
+  .edit-form .field { font-size: 1rem; }
+  .edit-actions, .tools { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; }
+  .tool-button { padding: 9px 14px; font: inherit; }
+  .tools { justify-content: flex-start; margin: 0 0 22px -12px; }
+  .tool-status { min-height: 1.5em; margin: 0 0 10px; color: var(--muted); font-size: .95rem; }
+  .tool-status:empty { display: none; }
+  dialog { width: min(540px, calc(100% - 32px)); max-height: min(80vh, 680px); overflow: auto; padding: 28px; border: 1px solid var(--ink); background: var(--bg); color: var(--ink); font: inherit; }
+  dialog[open] { animation: dialog-in .22s ease-out both; }
+  dialog[open].closing { animation: dialog-out .18s ease-in both; }
+  dialog::backdrop { background: rgba(0, 0, 0, .55); }
+  dialog[open]::backdrop { animation: backdrop-in .22s ease-out both; }
+  dialog[open].closing::backdrop { animation: backdrop-out .18s ease-in both; }
+  @keyframes dialog-in { from { opacity: 0; transform: translateY(14px) scale(.97); } to { opacity: 1; transform: translateY(0) scale(1); } }
+  @keyframes dialog-out { from { opacity: 1; transform: translateY(0) scale(1); } to { opacity: 0; transform: translateY(10px) scale(.98); } }
+  @keyframes backdrop-in { from { opacity: 0; } to { opacity: 1; } }
+  @keyframes backdrop-out { from { opacity: 1; } to { opacity: 0; } }
+  dialog h2 { margin-top: 0; }
+  dialog li { display: list-item; padding: 6px 0; border: 0; }
+  .dialog-close { display: block; margin: 20px 0 0 auto; }
+  .empty { display: block; padding: 26px 0; color: var(--muted); border-bottom: 1px solid var(--grid); }
 
   .clear { background: none; border: 0; padding: 4px 0; margin-top: 22px; cursor: pointer; color: var(--muted); }
   .clear:hover { color: var(--ink); }
 
   /* kredit */
-  footer { margin-top: auto; padding-top: clamp(56px, 10vh, 110px); }
+  footer { margin-top: auto; padding-top: clamp(36px, 6vh, 64px); }
   .credit { display: flex; flex-wrap: wrap; gap: 8px 36px; align-items: baseline; color: var(--muted); scroll-margin-top: 80px; }
   .credit strong { color: var(--ink); font-weight: 500; }
   .credit a { text-decoration: none; border-bottom: 1px solid var(--grid); padding-bottom: 2px; transition: border-color .2s, color .2s; }
   .credit a:hover { color: var(--ink); border-color: var(--ink); }
 
+  @media (min-width: 721px) {
+    .frame { height: calc(100svh - 82px); min-height: 0; }
+    .content { display: flex; flex-direction: column; flex: 1; min-height: 0; }
+    h1 { margin-top: clamp(12px, 2.4vh, 24px); font-size: clamp(2.8rem, 4vw, 4rem); }
+    form { margin-top: clamp(18px, 3.2vh, 30px); gap: 14px; }
+    .circle { width: 52px; height: 52px; }
+    .bar { margin-top: clamp(18px, 3.2vh, 30px); }
+    #zadaci { display: flex; flex: 1; flex-direction: column; min-height: 0; }
+    #list { flex: 1; min-height: 0; overflow-y: auto; overscroll-behavior: contain; }
+    footer { padding-top: 18px; }
+    .tools { justify-content: flex-start; gap: 8px; margin: 0 0 16px -12px; }
+    .tool-button { min-height: 38px; padding: 7px 10px; }
+    .tool-status { margin-bottom: 4px; }
+  }
+  @media (min-width: 721px) and (max-height: 900px) {
+    .frame { padding-top: 14px; padding-bottom: 18px; }
+    h1 { margin-top: 8px; font-size: clamp(2.5rem, 3.4vw, 3.3rem); }
+    .views { margin-top: 12px; }
+    .view-tab { padding: 8px 0; }
+    form { margin-top: 10px; gap: 8px; }
+    .title-input, .field { padding-top: 7px; padding-bottom: 7px; }
+    .note-body { min-height: 56px; }
+    .circle { width: 44px; height: 44px; }
+    .bar { margin-top: 10px; padding-bottom: 6px; }
+    li { padding: 8px 0; }
+    footer { padding-top: 8px; }
+    .tool-button { min-height: 34px; }
+  }
+  @media (min-width: 721px) and (max-height: 640px) {
+    .frame { padding-top: 8px; padding-bottom: 10px; }
+    h1 { margin-top: 4px; font-size: clamp(2.2rem, 3vw, 2.5rem); }
+    h1 span { font-size: .85em; }
+    .views { margin-top: 6px; }
+    form { margin-top: 4px; gap: 6px; }
+    .title-input, .field { padding-top: 5px; padding-bottom: 5px; }
+    .note-body { min-height: 44px; }
+    .circle { width: 36px; height: 36px; }
+    .bar { margin-top: 6px; }
+    footer { padding-top: 4px; }
+    .tools { gap: 5px; margin: 0 0 10px -8px; }
+    .tool-button { min-height: 30px; padding: 5px 8px; }
+  }
   @media (max-width: 720px) {
     :root { --gutter: 16px; --cols: 4; }
-    .caps { letter-spacing: .22em; font-size: .66rem; }
+    .caps { letter-spacing: .16em; font-size: .76rem; }
     header { height: auto; flex-direction: column; padding: 14px 0 6px; gap: 4px; }
     nav { gap: 22px; }
     nav a { padding: 10px 0; }
@@ -147,22 +222,30 @@
     .text { margin: 0 auto; }
     .meta { justify-content: center; }
     .credit { text-align: center; }
-    .frame { padding: 28px 20px 32px; min-height: calc(100vh - 110px); }
-    h1 { margin-top: 44px; font-size: clamp(2.5rem, 13vw, 3.6rem); }
+    .frame { padding: 28px 20px 32px; min-height: calc(100svh - 110px); }
+    h1 { margin-top: 40px; font-size: clamp(2.7rem, 13vw, 3.8rem); }
     form { margin-top: 36px; }
     .fields { grid-template-columns: 1fr; gap: 18px; }
-    .field, select.field { font-size: 16px; padding: 12px 0; }
+    .field, select.field { font-size: 17px; padding: 14px 0; }
     .cta { flex-direction: column; gap: 14px; }
     .cta .caps { text-align: center; }
     .filters { gap: 22px; }
     .tab { padding: 10px 0; }
-    li { gap: 12px; }
-    .check { width: 28px; height: 28px; }
+    .views { justify-content: center; margin-top: 24px; }
+    li { gap: 12px; padding: 16px 0; }
+    .check { width: 30px; height: 30px; }
     .del { width: 44px; height: 44px; }
+    .actions { flex-direction: column; }
+    .move { min-height: 46px; padding: 9px; }
+    .edit { min-height: 46px; padding: 9px; }
+    .tools { justify-content: flex-start; }
+    dialog { padding: 22px; text-align: left; }
     .clear { padding: 12px 0; }
     .credit { flex-direction: column; align-items: center; gap: 10px; }
   }
-  @media (prefers-reduced-motion: reduce) { * { transition: none !important; scroll-behavior: auto !important; } }
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after { animation-duration: .01ms !important; animation-iteration-count: 1 !important; transition: none !important; scroll-behavior: auto !important; }
+  }
 </style>
 </head>
 <body>
@@ -176,13 +259,19 @@
 <main class="frame">
 
   <div class="content">
-    <h1>Moji zadaci<span>na jednom mjestu</span></h1>
+    <h1>Zadaci i bilješke<span>na jednom mjestu</span></h1>
+
+    <div class="views caps" role="group" aria-label="Prikaz sadržaja">
+      <button class="view-tab" type="button" data-view="tasks" aria-pressed="true">Zadaci</button>
+      <button class="view-tab" type="button" data-view="notes" aria-pressed="false">Bilješke</button>
+    </div>
 
     <form id="form" autocomplete="off" aria-labelledby="zadaci">
       <input class="title-input" id="title" type="text" placeholder="Što treba napraviti?" maxlength="140" required aria-label="Naslov zadatka">
+      <textarea class="field note-body" id="note-body" placeholder="Sadržaj bilješke (neobavezno)" maxlength="2000" aria-label="Sadržaj bilješke" hidden></textarea>
       <div class="fields">
         <input class="field" id="category" type="text" placeholder="Kategorija (neobavezno)" maxlength="24" aria-label="Kategorija">
-        <select class="field" id="priority" aria-label="Prioritet">
+        <select class="field" id="priority" aria-label="Prioritet" data-priority>
           <option value="nizak">Nizak prioritet</option>
           <option value="srednji" selected>Srednji prioritet</option>
           <option value="visok">Visok prioritet</option>
@@ -190,7 +279,7 @@
       </div>
       <button class="cta" type="submit">
         <span class="circle" aria-hidden="true">→</span>
-        <span class="caps">Dodaj<br>zadatak</span>
+        <span class="caps" id="submit-label">Dodaj<br>zadatak</span>
       </button>
     </form>
 
@@ -209,12 +298,30 @@
   </div>
 
   <footer id="autor">
+    <div class="tools" aria-label="Pomoć i izvoz">
+      <button class="tool-button caps" id="help-open" type="button">Kako koristiti?</button>
+      <button class="tool-button caps" id="share" type="button">Podijeli u Bilješke</button>
+      <button class="tool-button caps" id="backup" type="button">Preuzmi kopiju</button>
+      <button class="tool-button caps" id="import-open" type="button">Uvezi iz datoteke</button>
+      <input id="import-file" type="file" accept=".txt,.json,text/plain,application/json" hidden>
+    </div>
+    <p class="tool-status" id="tool-status" role="status" aria-live="polite"></p>
     <div class="credit caps">
       <a href="https://github.com/NoaHusic-dev" target="_blank" rel="noopener">github.com/NoaHusic-dev</a>
       <span>&copy; 2026</span>
     </div>
   </footer>
 </main>
+
+<dialog id="help-dialog" aria-labelledby="help-title">
+  <h2 id="help-title">Kako koristiti TODO</h2>
+  <ul>
+    <li>Dodaj zadatke ili bilješke; zadatke možeš označiti kao završene, urediti ili premjestiti u Bilješke.</li>
+    <li>Podaci ostaju u ovom pregledniku i na ovom uređaju. Nakon otvaranja aplikacija radi i bez interneta.</li>
+    <li>Izvezi kopiju za prijenos ili podijeli popis s aplikacijom Bilješke.</li>
+  </ul>
+  <button class="tool-button dialog-close" id="help-close" type="button">Zatvori</button>
+</dialog>
 
 <script>
 (() => {
@@ -224,6 +331,7 @@
   const list = $("list");
   let todos = load();
   let filter = "all";
+  let view = "tasks";
 
   function load() {
     try { const d = JSON.parse(localStorage.getItem(KEY)); return Array.isArray(d) ? d : []; }
@@ -232,42 +340,74 @@
   function save() { try { localStorage.setItem(KEY, JSON.stringify(todos)); } catch {} }
 
   function counts() {
-    const left = todos.filter(t => !t.done).length;
-    $("count").textContent = todos.length ? `Preostalo ${left}/${todos.length}` : "";
-    $("clear").hidden = !todos.some(t => t.done);
+    const items = todos.filter(t => view === "notes" ? t.type === "note" : t.type !== "note");
+    const left = items.filter(t => !t.done).length;
+    $("count").textContent = items.length
+      ? view === "notes" ? `Bilješki ${items.length}` : `Preostalo ${left}/${items.length}`
+      : "";
+    $("clear").hidden = view === "notes" || !items.some(t => t.done);
   }
 
   function render() {
-    const visible = todos.filter(t => filter === "all" ? true : filter === "done" ? t.done : !t.done);
+    const items = todos.filter(t => view === "notes" ? t.type === "note" : t.type !== "note");
+    const visible = view === "notes" ? items : items.filter(t => filter === "all" ? true : filter === "done" ? t.done : !t.done);
     list.replaceChildren();
     if (!visible.length) {
       const li = document.createElement("li");
       li.className = "empty";
-      li.textContent = todos.length ? "Nema zadataka u ovom prikazu." : "Još nema zadataka. Upiši prvi iznad.";
+      li.textContent = view === "notes"
+        ? "Još nema bilješki. Dodaj novu ili prebaci zadatak u bilješke."
+        : items.length ? "Nema zadataka u ovom prikazu." : "Još nema zadataka. Upiši prvi iznad.";
       list.append(li);
     }
     for (const t of visible) {
       const li = document.createElement("li");
-      li.className = t.done ? "done" : "";
+      li.className = view === "tasks" && t.done ? "done" : "";
       li.dataset.id = t.id;
 
-      const cb = document.createElement("input");
-      cb.type = "checkbox"; cb.className = "check"; cb.checked = t.done;
-      cb.setAttribute("aria-label", "Završeno: " + t.title);
+      if (view === "tasks") {
+        const cb = document.createElement("input");
+        cb.type = "checkbox"; cb.className = "check"; cb.checked = t.done;
+        cb.setAttribute("aria-label", "Završeno: " + t.title);
+        li.append(cb);
+      }
 
       const body = document.createElement("div"); body.className = "body";
       const text = document.createElement("div"); text.className = "text"; text.textContent = t.title;
       const meta = document.createElement("div"); meta.className = "meta caps";
-      const p = document.createElement("span"); p.className = "prio " + t.priority; p.textContent = PRIO[t.priority];
-      meta.append(p);
+      if (view === "tasks") {
+        const p = document.createElement("span"); p.className = "prio " + t.priority; p.textContent = PRIO[t.priority];
+        meta.append(p);
+      }
       if (t.category) { const c = document.createElement("span"); c.textContent = t.category; meta.append(c); }
-      body.append(text, meta);
+      body.append(text);
+      if (view === "notes" && t.body) {
+        const noteContent = document.createElement("div");
+        noteContent.className = "note-content";
+        noteContent.textContent = t.body;
+        body.append(noteContent);
+      }
+      if (meta.childElementCount) body.append(meta);
 
       const del = document.createElement("button");
       del.className = "del"; del.type = "button"; del.textContent = "×";
-      del.setAttribute("aria-label", "Obriši zadatak: " + t.title);
+      del.setAttribute("aria-label", (view === "notes" ? "Obriši bilješku: " : "Obriši zadatak: ") + t.title);
 
-      li.append(cb, body, del);
+      li.append(body);
+      const actions = document.createElement("div");
+      actions.className = "actions";
+      const edit = document.createElement("button");
+      edit.className = "edit"; edit.type = "button"; edit.textContent = "Uredi";
+      edit.setAttribute("aria-label", (view === "notes" ? "Uredi bilješku: " : "Uredi zadatak: ") + t.title);
+      actions.append(edit);
+      if (view === "tasks") {
+        const move = document.createElement("button");
+        move.className = "move"; move.type = "button"; move.textContent = "U bilješke";
+        move.setAttribute("aria-label", "Prebaci u bilješke: " + t.title);
+        actions.append(move);
+      }
+      actions.append(del);
+      li.append(actions);
       list.append(li);
     }
     counts();
@@ -277,25 +417,113 @@
     e.preventDefault();
     const title = $("title").value.trim();
     if (!title) return;
-    todos.unshift({
+    const item = {
       id: Date.now().toString(36) + Math.random().toString(36).slice(2, 6),
-      title, category: $("category").value.trim(), priority: $("priority").value, done: false
-    });
+      type: view === "notes" ? "note" : "task",
+      title, category: $("category").value.trim(), done: false
+    };
+    if (view === "notes") item.body = $("note-body").value.trim();
+    else item.priority = $("priority").value;
+    todos.unshift(item);
     save(); render();
-    $("title").value = ""; $("category").value = ""; $("title").focus();
+    $("title").value = ""; $("category").value = ""; $("note-body").value = ""; $("title").focus();
   });
 
   list.addEventListener("click", (e) => {
     const li = e.target.closest("li[data-id]");
     if (!li) return;
     const t = todos.find(x => x.id === li.dataset.id);
-    if (e.target.matches(".check")) {
+    if (!t) return;
+    if (e.target.matches(".edit")) {
+      const editor = document.createElement("form");
+      editor.className = "edit-form";
+      const titleInput = document.createElement("input");
+      titleInput.className = "title-input"; titleInput.name = "title"; titleInput.maxLength = 140;
+      titleInput.required = true; titleInput.value = t.title;
+      titleInput.setAttribute("aria-label", "Naslov");
+      editor.append(titleInput);
+      if (t.type === "note") {
+        const content = document.createElement("textarea");
+        content.className = "field note-body"; content.name = "body"; content.maxLength = 2000;
+        content.value = t.body || ""; content.setAttribute("aria-label", "Sadržaj bilješke");
+        editor.append(content);
+      }
+      const fields = document.createElement("div");
+      fields.className = "fields" + (t.type === "note" ? " notes-mode" : "");
+      const category = document.createElement("input");
+      category.className = "field"; category.name = "category"; category.maxLength = 24;
+      category.value = t.category || ""; category.placeholder = "Kategorija (neobavezno)";
+      category.setAttribute("aria-label", "Kategorija");
+      fields.append(category);
+      if (t.type !== "note") {
+        const priority = document.createElement("select");
+        priority.className = "field"; priority.name = "priority";
+        priority.setAttribute("aria-label", "Prioritet");
+        for (const [value, label] of Object.entries(PRIO)) {
+          const option = document.createElement("option");
+          option.value = value; option.textContent = label; option.selected = value === t.priority;
+          priority.append(option);
+        }
+        fields.append(priority);
+      }
+      editor.append(fields);
+      const editActions = document.createElement("div");
+      editActions.className = "edit-actions";
+      const saveEdit = document.createElement("button");
+      saveEdit.className = "tool-button"; saveEdit.type = "submit"; saveEdit.textContent = "Spremi";
+      const cancelEdit = document.createElement("button");
+      cancelEdit.className = "tool-button"; cancelEdit.type = "button"; cancelEdit.textContent = "Odustani";
+      editActions.append(saveEdit, cancelEdit);
+      editor.append(editActions);
+      li.replaceChildren(editor);
+      titleInput.focus();
+    } else if (e.target.matches(".edit-form button[type=button]")) {
+      render();
+    } else if (e.target.matches(".check")) {
       t.done = e.target.checked; save();
       if (filter === "all") { li.classList.toggle("done", t.done); counts(); } else render();
+    } else if (e.target.matches(".move")) {
+      t.type = "note";
+      t.body = "";
+      delete t.done;
+      delete t.priority;
+      save(); render();
     } else if (e.target.matches(".del")) {
       li.classList.add("removing");
       setTimeout(() => { todos = todos.filter(x => x.id !== t.id); save(); render(); }, 200);
     }
+  });
+
+  list.addEventListener("submit", (e) => {
+    if (!e.target.matches(".edit-form")) return;
+    e.preventDefault();
+    const li = e.target.closest("li[data-id]");
+    const item = todos.find(x => x.id === li.dataset.id);
+    if (!item) return;
+    const data = new FormData(e.target);
+    item.title = data.get("title").trim();
+    item.category = data.get("category").trim();
+    if (item.type === "note") item.body = data.get("body").trim();
+    else item.priority = data.get("priority");
+    save(); render();
+  });
+
+  document.querySelector(".views").addEventListener("click", (e) => {
+    const b = e.target.closest("[data-view]");
+    if (!b) return;
+    view = b.dataset.view;
+    document.querySelectorAll("[data-view]").forEach(x => x.setAttribute("aria-pressed", String(x === b)));
+    $("title").placeholder = view === "notes" ? "Naslov bilješke" : "Što treba napraviti?";
+    $("title").setAttribute("aria-label", view === "notes" ? "Naslov bilješke" : "Naslov zadatka");
+    $("submit-label").textContent = view === "notes" ? "Dodaj bilješku" : "Dodaj zadatak";
+    $("zadaci").setAttribute("aria-label", view === "notes" ? "Popis bilješki" : "Popis zadataka");
+    $("note-body").hidden = view !== "notes";
+    $("priority").hidden = view === "notes";
+    document.querySelector(".fields").classList.toggle("notes-mode", view === "notes");
+    document.querySelector(".filters").hidden = view === "notes";
+    filter = "all";
+    document.querySelectorAll("[data-filter]").forEach(x => x.setAttribute("aria-pressed", String(x.dataset.filter === filter)));
+    render();
   });
 
   document.querySelector(".filters").addEventListener("click", (e) => {
@@ -308,6 +536,163 @@
 
   $("clear").addEventListener("click", () => { todos = todos.filter(t => !t.done); save(); render(); });
   window.addEventListener("storage", (e) => { if (e.key === KEY) { todos = load(); render(); } });
+
+  function exportText() {
+    const tasks = todos.filter(t => t.type !== "note");
+    const notes = todos.filter(t => t.type === "note");
+    const taskLines = tasks.length
+      ? tasks.map(t => `- [${t.done ? "x" : " "}] ${JSON.stringify(t.title)}${t.category ? ` | Kategorija: ${JSON.stringify(t.category)}` : ""}`).join("\n")
+      : "- Nema zadataka.";
+    const noteLines = notes.length
+      ? notes.map(t => `- ${JSON.stringify(t.title)}${t.category ? ` | Kategorija: ${JSON.stringify(t.category)}` : ""}${t.body ? `\n${t.body.split("\n").map(line => `  ${line}`).join("\n")}` : ""}`).join("\n")
+      : "- Nema bilješki.";
+    return `TODO Web aplikacija\nhttps://github.com/NoaHusic-dev\n\nZadaci:\n${taskLines}\n\nBilješke:\n${noteLines}`;
+  }
+
+  function downloadFile(name, content, type) {
+    const url = URL.createObjectURL(new Blob([content], { type }));
+    const link = document.createElement("a");
+    link.href = url; link.download = name;
+    document.body.append(link); link.click(); link.remove();
+    setTimeout(() => URL.revokeObjectURL(url), 1000);
+  }
+
+  const helpDialog = $("help-dialog");
+  let helpClosing = false;
+  function closeHelp() {
+    if (!helpDialog.open || helpClosing) return;
+    helpClosing = true;
+    helpDialog.classList.add("closing");
+    const delay = matchMedia("(prefers-reduced-motion: reduce)").matches ? 0 : 200;
+    setTimeout(() => {
+      if (helpDialog.open) helpDialog.close();
+      helpDialog.classList.remove("closing");
+      helpClosing = false;
+    }, delay);
+  }
+
+  $("help-open").addEventListener("click", () => {
+    if (!helpDialog.open) helpDialog.showModal();
+  });
+  $("help-close").addEventListener("click", closeHelp);
+  helpDialog.addEventListener("cancel", (e) => {
+    e.preventDefault();
+    closeHelp();
+  });
+  document.addEventListener("keydown", (e) => {
+    if (e.key === "Escape" && helpDialog.open) {
+      e.preventDefault();
+      closeHelp();
+    }
+  }, true);
+  helpDialog.addEventListener("click", (e) => {
+    if (e.target === helpDialog) closeHelp();
+  });
+  $("share").addEventListener("click", async () => {
+    const text = exportText();
+    $("tool-status").textContent = "";
+    if (navigator.share) {
+      try {
+        await navigator.share({ title: "TODO Web aplikacija", text });
+        $("tool-status").textContent = "Sadržaj je podijeljen.";
+      } catch (error) {
+        if (error.name === "AbortError") return;
+        $("tool-status").textContent = "Dijeljenje nije uspjelo; preuzimam tekstualnu datoteku.";
+        downloadFile("todo-biljeske.txt", text, "text/plain;charset=utf-8");
+      }
+    } else {
+      $("tool-status").textContent = "Dijeljenje nije dostupno; preuzimam tekstualnu datoteku.";
+      downloadFile("todo-biljeske.txt", text, "text/plain;charset=utf-8");
+    }
+  });
+  $("backup").addEventListener("click", () => {
+    downloadFile("todo-kopija.json", JSON.stringify({ version: 1, items: todos }, null, 2), "application/json");
+    $("tool-status").textContent = "Sigurnosna kopija je preuzeta.";
+  });
+  $("import-open").addEventListener("click", () => $("import-file").click());
+  $("import-file").addEventListener("change", async (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+    try {
+      const content = (await file.text()).replace(/^\uFEFF/, "").replace(/\r\n?/g, "\n");
+      let imported;
+      if (file.name.toLowerCase().endsWith(".json")) {
+        const data = JSON.parse(content);
+        const entries = Array.isArray(data) ? data : data.items;
+        if (!Array.isArray(entries)) throw new Error("JSON datoteka ne sadrži popis stavki.");
+        imported = entries.filter(item => item && typeof item.title === "string")
+          .map(item => ({
+            ...item,
+            id: Date.now().toString(36) + Math.random().toString(36).slice(2, 8),
+            type: item.type === "note" ? "note" : "task",
+            title: item.title.trim(),
+            category: typeof item.category === "string" ? item.category : "",
+            done: item.type === "note" ? false : Boolean(item.done),
+            ...(item.type === "note"
+              ? { body: typeof item.body === "string" ? item.body : "" }
+              : { priority: PRIO[item.priority] ? item.priority : "srednji" })
+          })).filter(item => item.title);
+      } else {
+        if (!content.trim()) throw new Error("TXT datoteka je prazna.");
+        const tasksMarker = "\nZadaci:\n";
+        const notesMarker = "\nBilješke:\n";
+        const tasksStart = content.indexOf(tasksMarker);
+        const notesStart = content.indexOf(notesMarker);
+        const makeId = () => Date.now().toString(36) + Math.random().toString(36).slice(2, 8);
+        const withCategory = (label) => {
+          const categoryMarker = " | Kategorija: ";
+          const categoryStart = label.lastIndexOf(categoryMarker);
+          const titleValue = categoryStart >= 0 ? label.slice(0, categoryStart) : label;
+          try {
+            const title = JSON.parse(titleValue);
+            const category = categoryStart >= 0 ? JSON.parse(label.slice(categoryStart + categoryMarker.length)) : "";
+            if (typeof title === "string" && typeof category === "string") return { title, category };
+          } catch {}
+          return { title: label, category: "" };
+        };
+        if (content.startsWith("TODO Web aplikacija\n") && tasksStart >= 0 && notesStart > tasksStart) {
+          imported = [];
+          const taskText = content.slice(tasksStart + tasksMarker.length, notesStart);
+          for (const line of taskText.split(/\r?\n/)) {
+            const match = /^- \[([ x])\] (.+)$/.exec(line);
+            if (!match) continue;
+            const fields = withCategory(match[2]);
+            imported.push({
+              id: makeId(), type: "task", ...fields,
+              priority: "srednji", done: match[1] === "x"
+            });
+          }
+          const noteText = content.slice(notesStart + notesMarker.length);
+          for (const entry of noteText.split(/\r?\n(?=- )/)) {
+            const lines = entry.split(/\r?\n/);
+            const match = /^- (.+)$/.exec(lines[0]);
+            if (!match) continue;
+            const fields = withCategory(match[1]);
+            imported.push({
+              id: makeId(), type: "note", ...fields,
+              body: lines.slice(1).map(line => line.startsWith("  ") ? line.slice(2) : line).join("\n")
+            });
+          }
+        } else {
+          imported = [{
+            id: makeId(),
+            type: "note",
+            title: file.name.replace(/\.txt$/i, "").slice(0, 140) || "Uvezena bilješka",
+            body: content,
+            category: ""
+          }];
+        }
+      }
+      if (!imported.length) throw new Error("U datoteci nema valjanih stavki za uvoz.");
+      todos = [...imported, ...todos];
+      save(); render();
+      $("tool-status").textContent = `Uvezeno stavki: ${imported.length}.`;
+    } catch (error) {
+      $("tool-status").textContent = `Uvoz nije uspio: ${error.message}`;
+    } finally {
+      e.target.value = "";
+    }
+  });
 
   render();
 })();
