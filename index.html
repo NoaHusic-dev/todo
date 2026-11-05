@@ -375,6 +375,8 @@ try {
   let itemsRef = null;
   let unsubscribeItems = null;
   let legacyItems = [];
+  let itemsLoading = false;
+  let itemsLoadError = "";
 
   function counts() {
     const items = todos.filter(t => view === "notes" ? t.type === "note" : t.type !== "note");
@@ -392,9 +394,13 @@ try {
     if (!visible.length) {
       const li = document.createElement("li");
       li.className = "empty";
-      li.textContent = view === "notes"
-        ? "Još nema bilješki. Dodaj novu ili prebaci zadatak u bilješke."
-        : items.length ? "Nema zadataka u ovom prikazu." : "Još nema zadataka. Upiši prvi iznad.";
+      li.textContent = itemsLoading
+        ? "Učitavam tvoje podatke…"
+        : itemsLoadError
+          ? itemsLoadError
+          : view === "notes"
+            ? "Još nema bilješki. Dodaj novu ili prebaci zadatak u bilješke."
+            : items.length ? "Nema zadataka u ovom prikazu." : "Još nema zadataka. Upiši prvi iznad.";
       list.append(li);
     }
     for (const t of visible) {
@@ -765,6 +771,7 @@ try {
   document.querySelector(".views").addEventListener("click", (e) => {
     const b = e.target.closest("[data-view]");
     if (!b) return;
+    $("form").reset();
     view = b.dataset.view;
     document.querySelectorAll("[data-view]").forEach(x => x.setAttribute("aria-pressed", String(x === b)));
     $("title").placeholder = view === "notes" ? "Naslov bilješke" : "Što treba napraviti?";
@@ -808,20 +815,37 @@ try {
     $("github-nav").hidden = Boolean(user);
     if (!user) {
       itemsRef = null;
+      itemsLoading = false;
+      itemsLoadError = "";
       $("migration").hidden = true;
       $("sign-in").disabled = false;
       return;
     }
-    $("user-email").textContent = user.displayName || user.email || "Google račun";
+    $("user-email").textContent = user.email || user.displayName || "Google račun";
     itemsRef = firestoreSdk.collection(db, "users", user.uid, "items");
+    itemsLoading = true;
+    itemsLoadError = "";
+    setStatus("Učitavam tvoje zadatke i bilješke…");
+    render();
     inspectLegacyItems();
+    let isInitialSnapshot = true;
     unsubscribeItems = firestoreSdk.onSnapshot(itemsRef, snapshot => {
       todos = snapshot.docs
         .map(document => ({ id: document.id, ...document.data() }))
         .sort((a, b) => (b.createdAt?.toMillis?.() || 0) - (a.createdAt?.toMillis?.() || 0));
+      itemsLoading = false;
+      itemsLoadError = "";
+      if (isInitialSnapshot) {
+        isInitialSnapshot = false;
+        setStatus("");
+      }
       render();
     }, error => {
+      itemsLoading = false;
+      itemsLoadError = "Podaci nisu učitani. Provjeri vezu i Firebase pravila, zatim ponovno učitaj stranicu.";
+      isInitialSnapshot = false;
       showError("Učitavanje zadataka i bilješki nije uspjelo", error);
+      render();
     });
   });
 } catch (error) {
