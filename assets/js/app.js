@@ -123,6 +123,46 @@ try {
     clearDateFilter.textContent = calendarDateFilter
       ? `Rok: ${formatDueDate(calendarDateFilter)} · Prikaži sve`
       : "";
+    renderOverview();
+  }
+
+  function renderOverview() {
+    const activeTasks = todos.filter(item => item.type !== "note" && !item.done);
+    $("active-task-count").textContent = String(activeTasks.length);
+    $("priority-task-count").textContent = String(activeTasks.filter(item => item.priority === "visok").length);
+
+    const upcomingList = $("upcoming-list");
+    upcomingList.replaceChildren();
+    const upcomingTasks = activeTasks
+      .filter(item => formatDueDate(item.dueDate))
+      .sort((a, b) => a.dueDate.localeCompare(b.dueDate)
+        || (priorityOrder[a.priority] ?? 1) - (priorityOrder[b.priority] ?? 1))
+      .slice(0, 5);
+
+    if (!upcomingTasks.length) {
+      const empty = document.createElement("li");
+      empty.className = "upcoming-empty";
+      empty.textContent = activeTasks.length ? "Nema zadanih rokova." : "Nema aktivnih zadataka.";
+      upcomingList.append(empty);
+      return;
+    }
+
+    for (const task of upcomingTasks) {
+      const item = document.createElement("li");
+      const button = document.createElement("button");
+      button.className = "upcoming-task";
+      button.type = "button";
+      button.dataset.upcomingDate = task.dueDate;
+      const title = document.createElement("span");
+      title.className = "upcoming-task-title";
+      title.textContent = task.title;
+      const date = document.createElement("span");
+      date.className = "upcoming-task-date";
+      date.textContent = formatDueDate(task.dueDate);
+      button.append(title, date);
+      item.append(button);
+      upcomingList.append(item);
+    }
   }
 
   function counts() {
@@ -540,7 +580,7 @@ try {
     view = b.dataset.view;
     calendarDateFilter = "";
     $("app-shell").classList.toggle("notes-view", view === "notes");
-    $("calendar-widget").hidden = view === "notes";
+    $("overview-panel").hidden = view === "notes";
     document.querySelectorAll("[data-view]").forEach(x => x.setAttribute("aria-pressed", String(x === b)));
     $("title").placeholder = view === "notes" ? "Naslov bilješke" : "Što treba napraviti?";
     $("title").setAttribute("aria-label", view === "notes" ? "Naslov bilješke" : "Naslov zadatka");
@@ -553,6 +593,20 @@ try {
     filter = "all";
     document.querySelectorAll("[data-filter]").forEach(x => x.setAttribute("aria-pressed", String(x.dataset.filter === filter)));
     render();
+  });
+
+  $("upcoming-list").addEventListener("click", e => {
+    const task = e.target.closest("[data-upcoming-date]");
+    if (!task) return;
+    calendarDateFilter = task.dataset.upcomingDate;
+    const [year, month] = calendarDateFilter.split("-").map(Number);
+    calendarMonth = new Date(year, month - 1, 1);
+    filter = "active";
+    document.querySelectorAll("[data-filter]").forEach(button => {
+      button.setAttribute("aria-pressed", String(button.dataset.filter === filter));
+    });
+    render();
+    $("zadaci").scrollIntoView({ behavior: "smooth", block: "nearest" });
   });
 
   document.querySelector(".filters").addEventListener("click", (e) => {

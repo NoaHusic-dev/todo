@@ -49,6 +49,8 @@
     </section>
     <div class="app-heading">
       <h1 id="app-title">Zadaci i bilješke<span>na jednom mjestu</span></h1>
+    </div>
+    <aside class="overview-panel" id="overview-panel" aria-label="Pregled zadataka">
       <section class="calendar-widget" id="calendar-widget" aria-label="Kalendar rokova">
         <div class="calendar-header">
           <button class="calendar-nav" type="button" data-calendar-shift="-1" aria-label="Prethodni mjesec">‹</button>
@@ -60,7 +62,21 @@
         </div>
         <div class="calendar-grid" id="calendar-days"></div>
       </section>
-    </div>
+      <div class="overview-stats" aria-label="Statistika zadataka">
+        <div class="overview-stat">
+          <span class="overview-stat-value" id="active-task-count">0</span>
+          <span class="overview-stat-label">Aktivnih</span>
+        </div>
+        <div class="overview-stat">
+          <span class="overview-stat-value" id="priority-task-count">0</span>
+          <span class="overview-stat-label">Visok prioritet</span>
+        </div>
+      </div>
+      <section class="upcoming-section" aria-labelledby="upcoming-title">
+        <h2 id="upcoming-title">Nadolazeći rokovi</h2>
+        <ul class="upcoming-list" id="upcoming-list"></ul>
+      </section>
+    </aside>
 
     <div class="task-panel">
       <div class="view-controls">

@@ -22,7 +22,7 @@
   button:hover:not(:disabled) { transform: translateY(-2px); }
   button:active:not(:disabled) { transform: scale(.97); }
 
-  .caps { font-family: var(--label); font-size: .82rem; letter-spacing: .2em; text-transform: uppercase; font-weight: 500; }
+  .caps { font-family: var(--label); font-size: .82rem; letter-spacing: .2em; text-transform: uppercase; font-weight: 600; }
 
   /* zaglavlje */
   header {
@@ -51,8 +51,9 @@
   .app-heading { display: flex; align-items: flex-start; justify-content: space-between; gap: clamp(20px, 4vw, 48px); }
   .app-heading h1 { flex: 1; min-width: 0; }
   .task-panel { display: flex; min-width: 0; flex-direction: column; }
+  .overview-panel { display: flex; min-width: 0; flex-direction: column; gap: 18px; }
   .calendar-widget {
-    flex: none; width: 232px; margin-top: 12px; padding: 10px 12px 12px;
+    flex: none; width: 100%; margin-top: 0; padding: 10px 12px 12px;
     border: 1px solid var(--grid); background: rgba(255, 255, 255, .055);
   }
   .calendar-header { display: flex; align-items: center; justify-content: space-between; gap: 8px; margin-bottom: 8px; }
@@ -69,6 +70,18 @@
   .calendar-day.selected { background: var(--ink); color: var(--bg); }
   .calendar-dot { position: absolute; bottom: 1px; left: 50%; width: 4px; height: 4px; border-radius: 50%; background: currentColor; transform: translateX(-50%); }
   .calendar-day.selected .calendar-dot { background: var(--bg); }
+  .overview-stats { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); border-top: 1px solid var(--grid); border-bottom: 1px solid var(--grid); }
+  .overview-stat { display: flex; min-width: 0; flex-direction: column; gap: 4px; padding: 12px 10px; }
+  .overview-stat + .overview-stat { border-left: 1px solid var(--grid); }
+  .overview-stat-value { font-size: 1.65rem; line-height: 1; font-weight: 600; }
+  .overview-stat-label { color: var(--muted); font-size: .73rem; }
+  .upcoming-section h2 { margin: 0 0 8px; font-size: .95rem; font-weight: 600; }
+  .upcoming-list li { display: block; padding: 0; border-bottom: 1px solid var(--grid); }
+  .upcoming-task { display: flex; width: 100%; min-width: 0; flex-direction: column; align-items: flex-start; gap: 4px; padding: 10px 2px; border: 0; background: none; color: var(--ink); text-align: left; cursor: pointer; }
+  .upcoming-task:hover .upcoming-task-title { text-decoration: underline; text-underline-offset: 3px; }
+  .upcoming-task-title { width: 100%; overflow: hidden; font-size: .88rem; text-overflow: ellipsis; white-space: nowrap; }
+  .upcoming-task-date { color: var(--muted); font-size: .75rem; }
+  .upcoming-empty { padding: 10px 0; color: var(--muted); font-size: .85rem; }
   .date-field { display: flex; min-width: 0; grid-column: 1 / -1; flex-direction: column; justify-content: flex-end; gap: 2px; }
   .date-label { color: var(--muted); font-size: .62rem; }
   .date-field input { min-width: 0; min-height: 38px; padding: 7px 0; font-size: .9rem; }
@@ -89,7 +102,7 @@
     background: transparent; border: 0; border-bottom: 1px solid var(--ink); border-radius: 0;
     color: var(--ink); font-family: var(--sans); padding: 10px 0; outline: none; width: 100%;
   }
-  .title-input { font-size: clamp(1.35rem, 2.4vw, 1.8rem); font-weight: 500; letter-spacing: -.02em; }
+  .title-input { font-size: clamp(1.35rem, 2.4vw, 1.8rem); font-weight: 600; letter-spacing: -.02em; }
   .title-input::placeholder, .field::placeholder { color: var(--muted); opacity: 1; }
   .title-input:focus, .field:focus { border-bottom-color: var(--accent); }
   .fields { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 24px; }
@@ -124,6 +137,7 @@
   .views { display: flex; gap: 32px; margin-top: 28px; border-bottom: 1px solid var(--ink); }
   .view-controls .views { margin-top: 0; }
   .view-tab { background: none; border: 0; padding: 12px 0; cursor: pointer; color: var(--muted); position: relative; }
+  .view-tab { font-family: var(--sans); font-size: 1rem; font-weight: 600; letter-spacing: 0; text-transform: none; }
   .view-tab[aria-pressed="true"] { color: var(--ink); }
   .view-tab[aria-pressed="true"]::after { content: ""; position: absolute; left: 0; bottom: -1px; height: 1px; width: 100%; background: var(--ink); }
   .fields.notes-mode { grid-template-columns: 1fr; }
@@ -142,7 +156,7 @@
   .check:checked { background: var(--ink); }
   .check:checked::after { content: ""; width: 6px; height: 11px; margin-top: -2px; border: solid var(--bg); border-width: 0 1.5px 1.5px 0; transform: rotate(45deg); }
   .body { flex: 1; min-width: 0; }
-  .text { font-size: 1.3rem; font-weight: 500; letter-spacing: -.02em; overflow-wrap: anywhere; position: relative; width: fit-content; max-width: 100%; transition: color .2s; }
+  .text { font-size: 1.3rem; font-weight: 600; letter-spacing: -.02em; overflow-wrap: anywhere; position: relative; width: fit-content; max-width: 100%; transition: color .2s; }
   .text::after { content: ""; position: absolute; left: 0; top: 55%; height: 1.5px; width: 0; background: currentColor; transition: width .28s ease; }
   li.done .text { color: var(--muted); }
   li.done .text::after { width: 100%; }
@@ -164,6 +178,7 @@
   .edit-form .field { font-size: 1rem; }
   .edit-actions { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; }
   .tool-button { padding: 9px 14px; font: inherit; }
+  .tool-button.caps { font-family: var(--label); font-size: .82rem; font-weight: 600; letter-spacing: .2em; text-transform: uppercase; }
   .tool-status { min-height: 1.5em; margin: 0 0 10px; color: var(--muted); font-size: .95rem; }
   .tool-status:empty { display: none; }
   .auth-card { width: min(520px, 100%); margin: auto; }
@@ -260,12 +275,13 @@
     nav a { padding: 10px 0; }
     .content { display: flex; flex-direction: column; margin: 0 auto; text-align: center; }
     .app-heading { order: 0; }
-    #form { order: 1; }
-    #form-status { order: 2; }
-    .task-panel { order: 3; }
+    .overview-panel { order: 1; width: min(320px, calc(100vw - 40px)); align-self: center; gap: 14px; }
+    #form { order: 2; }
+    #form-status { order: 3; }
+    .task-panel { order: 4; }
     .app-heading { flex-direction: column; align-items: center; gap: 18px; }
     .app-heading h1 { width: 100%; margin-top: 40px; }
-    .calendar-widget { align-self: center; width: min(320px, calc(100vw - 40px)); margin-top: 0; padding: 10px 12px; }
+    .calendar-widget { padding: 10px 12px; }
     .calendar-day, .calendar-empty-day { width: 100%; height: 34px; }
     .eyebrow::after { margin: 18px auto 0; }
     .title-input, .field, select.field { text-align: center; text-align-last: center; }
@@ -300,34 +316,43 @@
   @media (min-width: 721px) and (max-width: 959px) {
     .app-heading { gap: 20px; }
     .app-heading h1 { font-size: clamp(2.4rem, 4vw, 3rem); }
-    .calendar-widget { width: 205px; }
   }
   @media (min-width: 960px) {
+    :root { --gutter: 24px; }
+    .frame { padding-inline: clamp(24px, 4vw, 56px); }
     #app-shell .content {
       display: grid;
-      grid-template-columns: minmax(0, .9fr) minmax(0, 1.1fr);
+      max-width: 1440px;
+      grid-template-columns: minmax(240px, .95fr) minmax(300px, 1.3fr) minmax(210px, .8fr);
       grid-template-rows: auto auto minmax(0, 1fr) auto;
       grid-template-areas:
-        "migration migration"
-        "heading heading"
-        "form task-panel"
-        "form-status task-panel";
-      column-gap: clamp(36px, 5vw, 72px);
+        "migration migration migration"
+        "heading heading overview"
+        "form task-panel overview"
+        "form-status task-panel overview";
+      column-gap: clamp(16px, 2vw, 30px);
       flex: 1;
       min-height: 0;
     }
     .migration { grid-area: migration; }
     .app-heading { grid-area: heading; }
-    .task-panel { grid-area: task-panel; min-height: 0; }
-    .view-controls { align-items: center; margin-top: 0; }
+    .overview-panel { grid-area: overview; min-height: 0; overflow-y: auto; overscroll-behavior: contain; }
+    .task-panel { grid-area: task-panel; min-height: 0; padding-top: clamp(18px, 3.2vh, 30px); }
+    .view-controls { align-items: center; gap: 8px; margin-top: 0; }
     .view-controls .views { margin-top: 0; }
-    .task-panel { padding-top: clamp(18px, 3.2vh, 30px); }
+    .view-controls .views { gap: clamp(14px, 2vw, 32px); }
+    .view-controls .tool-button { padding-inline: 8px; font-size: .68rem; letter-spacing: .12em; }
     #form { grid-area: form; align-self: start; margin-top: clamp(18px, 3.2vh, 30px); }
     #form-status { grid-area: form-status; align-self: start; }
     #zadaci { display: flex; flex: 1; flex-direction: column; min-height: 0; margin-top: clamp(18px, 3.2vh, 30px); }
     .bar { flex: none; margin-top: 0; }
     #list { flex: 1; min-height: 0; }
+    .frame.notes-view .content { display: flex; max-width: 1440px; }
+    .frame.notes-view .overview-panel { display: none; }
     .frame.notes-view .task-panel { display: flex; }
+  }
+  @media (min-width: 960px) and (max-width: 1199px) {
+    .fields { grid-template-columns: 1fr; gap: 12px; }
   }
   @media (prefers-reduced-motion: reduce) {
     *, *::before, *::after { animation-duration: .01ms !important; animation-iteration-count: 1 !important; transition: none !important; scroll-behavior: auto !important; }
