@@ -301,7 +301,7 @@
     .meta { justify-content: center; }
     .credit { text-align: center; }
     .frame { padding: 28px 20px 32px; min-height: calc(100svh - 110px); }
-    .app-heading h1 { font-size: clamp(2.7rem, 13vw, 3.8rem); }
+    .app-heading h1 { font-size: clamp(2.3rem, 10vw, 3.1rem); }
     form { margin-top: 36px; }
     .fields { grid-template-columns: 1fr; gap: 18px; }
     .field, select.field { font-size: 17px; padding: 14px 0; }
