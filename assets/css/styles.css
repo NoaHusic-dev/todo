@@ -284,12 +284,12 @@
     nav a { padding: 10px 0; }
     .content { display: flex; flex-direction: column; margin: 0 auto; text-align: center; }
     .app-heading { order: 0; }
-    .overview-panel { order: 1; width: min(320px, calc(100vw - 40px)); align-self: center; gap: 14px; }
+    .overview-panel { order: 1; width: min(320px, calc(100vw - 40px)); align-self: center; gap: 14px; margin-top: 16px; }
     #form { order: 2; }
     #form-status { order: 3; }
     .task-panel { order: 4; }
     .app-heading { flex-direction: column; align-items: center; gap: 18px; }
-    .app-heading h1 { width: 100%; margin-top: 40px; }
+    .app-heading h1 { width: 100%; margin-top: 24px; }
     .calendar-widget { padding: 10px 12px; }
     .calendar-day, .calendar-empty-day { width: 100%; height: 34px; }
     .eyebrow::after { margin: 18px auto 0; }
