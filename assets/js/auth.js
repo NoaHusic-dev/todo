@@ -1,4 +1,4 @@
-export function setupAuthentication({
+export async function setupAuthentication({
   authSdk,
   auth,
   googleProvider,
@@ -8,6 +8,10 @@ export function setupAuthentication({
 }) {
   const authStatus = document.getElementById("auth-status");
   const signInButton = document.getElementById("sign-in");
+
+  signInButton.disabled = true;
+  signInButton.textContent = "Provjeravam spremljenu prijavu…";
+  authStatus.textContent = "Provjeravam spremljenu prijavu…";
 
   signInButton.addEventListener("click", async () => {
     signInButton.disabled = true;
@@ -33,13 +37,26 @@ export function setupAuthentication({
     }
   });
 
-  signInButton.disabled = false;
-  signInButton.textContent = "Nastavi s Googleom";
-  authStatus.textContent = "Tvoji podaci sinkroniziraju se uz tvoj Google račun.";
+  let persistenceError = null;
+  try {
+    await authSdk.setPersistence(auth, authSdk.browserLocalPersistence);
+  } catch (error) {
+    persistenceError = error;
+    console.error("Spremanje prijave nije uspjelo", error);
+  }
 
   authSdk.getRedirectResult(auth).catch(error => {
     showError("Google prijava nije uspjela", error);
   });
 
-  return authSdk.onAuthStateChanged(auth, onUserChanged);
+  return authSdk.onAuthStateChanged(auth, user => {
+    if (!user) {
+      signInButton.disabled = false;
+      signInButton.textContent = "Nastavi s Googleom";
+      authStatus.textContent = persistenceError
+        ? "Ovaj preglednik možda neće zapamtiti tvoju prijavu."
+        : "Tvoji podaci sinkroniziraju se uz tvoj Google račun.";
+    }
+    onUserChanged(user);
+  });
 }
