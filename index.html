@@ -530,24 +530,15 @@ try {
     }
   });
 
-  $("sign-in").addEventListener("click", async () => {
+    $("sign-in").addEventListener("click", async () => {
     const button = $("sign-in");
     button.disabled = true;
     authStatus.textContent = "Otvaram Google prijavu…";
     try {
-      if (matchMedia("(max-width: 720px)").matches) {
-        await authSdk.signInWithRedirect(auth, googleProvider);
-      } else {
-        await authSdk.signInWithPopup(auth, googleProvider);
-      }
+      await authSdk.signInWithPopup(auth, googleProvider);
     } catch (error) {
-      if (error.code === "auth/popup-blocked" || error.code === "auth/operation-not-supported-in-this-environment") {
-        try {
-          await authSdk.signInWithRedirect(auth, googleProvider);
-          return;
-        } catch (redirectError) {
-          showError("Google prijava nije uspjela", redirectError);
-        }
+      if (error.code === "auth/popup-closed-by-user" || error.code === "auth/cancelled-popup-request") {
+        authStatus.textContent = "Prijava je otkazana. Pokušaj ponovno.";
       } else {
         showError("Google prijava nije uspjela", error);
       }
