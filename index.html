@@ -47,14 +47,42 @@
       <p id="migration-message"></p>
       <button class="tool-button" id="migration-button" type="button">Prenesi u račun</button>
     </section>
-    <h1>Zadaci i bilješke<span>na jednom mjestu</span></h1>
+    <div class="app-heading">
+      <h1 id="app-title">Zadaci i bilješke<span>na jednom mjestu</span></h1>
+      <section class="calendar-widget" id="calendar-widget" aria-label="Kalendar rokova">
+        <div class="calendar-header">
+          <button class="calendar-nav" type="button" data-calendar-shift="-1" aria-label="Prethodni mjesec">‹</button>
+          <h2 id="calendar-month" aria-live="polite"></h2>
+          <button class="calendar-nav" type="button" data-calendar-shift="1" aria-label="Sljedeći mjesec">›</button>
+        </div>
+        <div class="calendar-grid calendar-weekdays" aria-hidden="true">
+          <span>Po</span><span>Ut</span><span>Sr</span><span>Če</span><span>Pe</span><span>Su</span><span>Ne</span>
+        </div>
+        <div class="calendar-grid" id="calendar-days"></div>
+      </section>
+    </div>
 
-    <div class="view-controls">
-      <div class="views caps" role="group" aria-label="Prikaz sadržaja">
-        <button class="view-tab" type="button" data-view="tasks" aria-pressed="true">Zadaci</button>
-        <button class="view-tab" type="button" data-view="notes" aria-pressed="false">Bilješke</button>
+    <div class="task-panel">
+      <div class="view-controls">
+        <div class="views caps" role="group" aria-label="Prikaz sadržaja">
+          <button class="view-tab" type="button" data-view="tasks" aria-pressed="true">Zadaci</button>
+          <button class="view-tab" type="button" data-view="notes" aria-pressed="false">Bilješke</button>
+        </div>
+        <button class="tool-button caps" id="export-pdf" type="button">Izvezi sve u PDF</button>
       </div>
-      <button class="tool-button caps" id="export-pdf" type="button">Izvezi sve u PDF</button>
+      <section id="zadaci" aria-label="Popis zadataka">
+        <div class="bar">
+          <div class="filters caps" role="group" aria-label="Filter zadataka">
+            <button class="tab" data-filter="all" aria-pressed="true">Svi</button>
+            <button class="tab" data-filter="active" aria-pressed="false">Aktivni</button>
+            <button class="tab" data-filter="done" aria-pressed="false">Završeni</button>
+          </div>
+          <button class="calendar-filter" id="clear-date-filter" type="button" hidden></button>
+          <span class="count caps" id="count" aria-live="polite"></span>
+        </div>
+        <ul id="list"></ul>
+        <button class="clear caps" id="clear" type="button" hidden>Obriši završene</button>
+      </section>
     </div>
 
     <form id="form" autocomplete="off" aria-labelledby="zadaci">
@@ -67,6 +95,10 @@
           <option value="srednji" selected>Srednji prioritet</option>
           <option value="visok">Visok prioritet</option>
         </select>
+        <label class="date-field" for="due-date">
+          <span class="date-label caps">Rok (neobavezno)</span>
+          <input class="field" id="due-date" type="date" aria-label="Rok zadatka">
+        </label>
       </div>
       <button class="cta" type="submit">
         <span class="circle" aria-hidden="true">→</span>
@@ -74,18 +106,6 @@
       </button>
     </form>
     <p class="tool-status" id="form-status" role="status" aria-live="polite"></p>
-    <section id="zadaci" aria-label="Popis zadataka">
-      <div class="bar">
-        <div class="filters caps" role="group" aria-label="Filter zadataka">
-          <button class="tab" data-filter="all" aria-pressed="true">Svi</button>
-          <button class="tab" data-filter="active" aria-pressed="false">Aktivni</button>
-          <button class="tab" data-filter="done" aria-pressed="false">Završeni</button>
-        </div>
-        <span class="count caps" id="count" aria-live="polite"></span>
-      </div>
-      <ul id="list"></ul>
-      <button class="clear caps" id="clear" type="button" hidden>Obriši završene</button>
-    </section>
   </div>
 
   <footer id="autor">

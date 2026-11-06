@@ -12,15 +12,118 @@ try {
   const { authSdk, auth, firestoreSdk, db, googleProvider } = await initializeFirebase();
   const PRIO = { visok: "Visok prioritet", srednji: "Srednji prioritet", nizak: "Nizak prioritet" };
   const list = $("list");
+  const priorityOrder = { visok: 0, srednji: 1, nizak: 2 };
+  const today = new Date();
   let todos = [];
   let filter = "all";
   let view = "tasks";
+  let calendarDateFilter = "";
+  let calendarMonth = new Date(today.getFullYear(), today.getMonth(), 1);
   let currentUser = null;
   let itemsRef = null;
   let unsubscribeItems = null;
   let legacyItems = [];
   let itemsLoading = false;
   let itemsLoadError = "";
+
+  function dateKey(date) {
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, "0");
+    const day = String(date.getDate()).padStart(2, "0");
+    return `${year}-${month}-${day}`;
+  }
+
+  function formatDueDate(value) {
+    if (!/^\d{4}-\d{2}-\d{2}$/.test(value || "")) return "";
+    const [year, month, day] = value.split("-").map(Number);
+    const date = new Date(year, month - 1, day);
+    if (date.getFullYear() !== year || date.getMonth() !== month - 1 || date.getDate() !== day) return "";
+    return date.toLocaleDateString("hr-HR", { day: "numeric", month: "short", year: "numeric" });
+  }
+
+  function taskCountLabel(count) {
+    const lastTwoDigits = count % 100;
+    if (count % 10 === 1 && lastTwoDigits !== 11) return `${count} zadatak s rokom`;
+    if (count % 10 >= 2 && count % 10 <= 4 && (lastTwoDigits < 12 || lastTwoDigits > 14)) {
+      return `${count} zadatka s rokom`;
+    }
+    return `${count} zadataka s rokom`;
+  }
+
+  function sortTasks(tasks) {
+    return tasks.slice().sort((a, b) => {
+      const completionOrder = Number(Boolean(a.done)) - Number(Boolean(b.done));
+      if (completionOrder) return completionOrder;
+      const priorityDifference = (priorityOrder[a.priority] ?? 1) - (priorityOrder[b.priority] ?? 1);
+      if (priorityDifference) return priorityDifference;
+      if (a.dueDate !== b.dueDate) {
+        if (!a.dueDate) return 1;
+        if (!b.dueDate) return -1;
+        return a.dueDate.localeCompare(b.dueDate);
+      }
+      return (b.createdAt?.toMillis?.() || 0) - (a.createdAt?.toMillis?.() || 0);
+    });
+  }
+
+  function renderCalendar() {
+    $("calendar-month").textContent = calendarMonth.toLocaleDateString("hr-HR", {
+      month: "long",
+      year: "numeric"
+    });
+    const days = $("calendar-days");
+    days.replaceChildren();
+
+    const year = calendarMonth.getFullYear();
+    const month = calendarMonth.getMonth();
+    const dayCount = new Date(year, month + 1, 0).getDate();
+    const leadingDays = (new Date(year, month, 1).getDay() + 6) % 7;
+    const cellCount = Math.ceil((leadingDays + dayCount) / 7) * 7;
+
+    for (let cell = 0; cell < cellCount; cell += 1) {
+      const dayNumber = cell - leadingDays + 1;
+      if (dayNumber < 1 || dayNumber > dayCount) {
+        const emptyDay = document.createElement("span");
+        emptyDay.className = "calendar-empty-day";
+        emptyDay.setAttribute("aria-hidden", "true");
+        days.append(emptyDay);
+        continue;
+      }
+
+      const dayDate = new Date(year, month, dayNumber);
+      const key = dateKey(dayDate);
+      const dueTasks = todos.filter(item => item.type !== "note" && !item.done && item.dueDate === key);
+      const button = document.createElement("button");
+      button.className = "calendar-day";
+      button.type = "button";
+      button.dataset.calendarDate = key;
+      button.textContent = String(dayNumber);
+      button.setAttribute("aria-label", `${dayDate.toLocaleDateString("hr-HR", {
+        day: "numeric",
+        month: "long",
+        year: "numeric"
+      })}${dueTasks.length ? `, ${taskCountLabel(dueTasks.length)}` : ""}`);
+      if (key === dateKey(new Date())) button.classList.add("today");
+      if (key === calendarDateFilter) {
+        button.classList.add("selected");
+        button.setAttribute("aria-pressed", "true");
+      } else {
+        button.setAttribute("aria-pressed", "false");
+      }
+      if (dueTasks.length) {
+        const dot = document.createElement("span");
+        dot.className = "calendar-dot";
+        dot.setAttribute("aria-hidden", "true");
+        button.append(dot);
+      }
+      days.append(button);
+    }
+
+    const clearDateFilter = $("clear-date-filter");
+    clearDateFilter.hidden = !calendarDateFilter;
+    clearDateFilter.textContent = calendarDateFilter
+      ? `Rok: ${formatDueDate(calendarDateFilter)} · Prikaži sve`
+      : "";
+  }
 
   function counts() {
     const items = todos.filter(t => view === "notes" ? t.type === "note" : t.type !== "note");
@@ -33,9 +136,12 @@ try {
 
   function render() {
     const items = todos.filter(t => view === "notes" ? t.type === "note" : t.type !== "note");
-    const visible = view === "notes" ? items : items.filter(t => filter === "all" ? true : filter === "done" ? t.done : !t.done);
+    const visible = view === "notes" ? items : items
+      .filter(t => !calendarDateFilter || t.dueDate === calendarDateFilter)
+      .filter(t => filter === "all" ? true : filter === "done" ? t.done : !t.done);
+    const orderedVisible = view === "notes" ? visible : sortTasks(visible);
     list.replaceChildren();
-    if (!visible.length) {
+    if (!orderedVisible.length) {
       const li = document.createElement("li");
       li.className = "empty";
       li.textContent = itemsLoading
@@ -47,7 +153,7 @@ try {
             : items.length ? "Nema zadataka u ovom prikazu." : "Još nema zadataka. Upiši prvi iznad.";
       list.append(li);
     }
-    for (const t of visible) {
+    for (const t of orderedVisible) {
       const li = document.createElement("li");
       li.className = view === "tasks" && t.done ? "done" : "";
       li.dataset.id = t.id;
@@ -67,6 +173,15 @@ try {
         meta.append(p);
       }
       if (t.category) { const c = document.createElement("span"); c.textContent = t.category; meta.append(c); }
+      if (view === "tasks" && t.dueDate && formatDueDate(t.dueDate)) {
+        const dueDate = document.createElement("span");
+        dueDate.className = "due-date";
+        const dot = document.createElement("span");
+        dot.className = "calendar-dot";
+        dot.setAttribute("aria-hidden", "true");
+        dueDate.append(dot, document.createTextNode(`Rok: ${formatDueDate(t.dueDate)}`));
+        meta.append(dueDate);
+      }
       body.append(text);
       if (view === "notes" && t.body) {
         const noteContent = document.createElement("div");
@@ -98,6 +213,7 @@ try {
       list.append(li);
     }
     counts();
+    renderCalendar();
   }
 
   function showError(action, error) {
@@ -183,12 +299,12 @@ try {
       '"': "&quot;",
       "'": "&#39;"
     })[character]);
-    const tasks = todos.filter(item => item.type !== "note");
+    const tasks = sortTasks(todos.filter(item => item.type !== "note"));
     const notes = todos.filter(item => item.type === "note");
     const taskList = tasks.length
       ? `<ol>${tasks.map(item => `<li>
           <strong>${escapeHtml(item.title)}</strong>
-          <span>${item.done ? "Završeno" : "Nije završeno"} · ${escapeHtml(PRIO[item.priority] || "Srednji prioritet")}${item.category ? ` · ${escapeHtml(item.category)}` : ""}</span>
+          <span>${item.done ? "Završeno" : "Nije završeno"} · ${escapeHtml(PRIO[item.priority] || "Srednji prioritet")}${item.category ? ` · ${escapeHtml(item.category)}` : ""}${formatDueDate(item.dueDate) ? ` · Rok: ${escapeHtml(formatDueDate(item.dueDate))}` : ""}</span>
         </li>`).join("")}</ol>`
       : "<p>Nema zadataka.</p>";
     const noteList = notes.length
@@ -242,7 +358,8 @@ try {
     title,
     category: $("category").value.trim(),
     body: $("note-body").value,
-    priority: $("priority").value
+    priority: $("priority").value,
+    dueDate: $("due-date").value
   };
   const item = {
     type: view === "notes" ? "note" : "task",
@@ -252,7 +369,11 @@ try {
     updatedAt: firestoreSdk.serverTimestamp()
   };
   if (view === "notes") item.body = saved.body.trim();
-  else { item.priority = saved.priority; item.done = false; }
+  else {
+    item.priority = saved.priority;
+    item.done = false;
+    if (saved.dueDate) item.dueDate = saved.dueDate;
+  }
 
   // polja se prazne odmah, ne čeka se server
   $("form").reset();
@@ -272,6 +393,7 @@ try {
     $("category").value = saved.category;
     $("note-body").value = saved.body;
     $("priority").value = saved.priority;
+    $("due-date").value = saved.dueDate;
     showError("Spremanje nije uspjelo", error);
   } finally {
     clearTimeout(slow);
@@ -314,6 +436,18 @@ try {
           priority.append(option);
         }
         fields.append(priority);
+        const dueDate = document.createElement("label");
+        dueDate.className = "date-field";
+        const dueDateLabel = document.createElement("span");
+        dueDateLabel.className = "date-label caps";
+        dueDateLabel.textContent = "Rok (neobavezno)";
+        const dueDateInput = document.createElement("input");
+        dueDateInput.className = "field";
+        dueDateInput.type = "date";
+        dueDateInput.name = "dueDate";
+        dueDateInput.value = t.dueDate || "";
+        dueDate.append(dueDateLabel, dueDateInput);
+        fields.append(dueDate);
       }
       editor.append(fields);
       const editActions = document.createElement("div");
@@ -344,6 +478,7 @@ try {
           body: "",
           done: firestoreSdk.deleteField(),
           priority: firestoreSdk.deleteField(),
+          dueDate: firestoreSdk.deleteField(),
           updatedAt: firestoreSdk.serverTimestamp()
         });
       } catch (error) {
@@ -374,7 +509,10 @@ try {
       updatedAt: firestoreSdk.serverTimestamp()
     };
     if (item.type === "note") updated.body = data.get("body").trim();
-    else updated.priority = data.get("priority");
+    else {
+      updated.priority = data.get("priority");
+      updated.dueDate = data.get("dueDate") || firestoreSdk.deleteField();
+    }
     try {
       await firestoreSdk.updateDoc(itemDocument(item.id), updated);
     } catch (error) {
@@ -400,7 +538,9 @@ try {
     if (!b) return;
     $("form").reset();
     view = b.dataset.view;
+    calendarDateFilter = "";
     $("app-shell").classList.toggle("notes-view", view === "notes");
+    $("calendar-widget").hidden = view === "notes";
     document.querySelectorAll("[data-view]").forEach(x => x.setAttribute("aria-pressed", String(x === b)));
     $("title").placeholder = view === "notes" ? "Naslov bilješke" : "Što treba napraviti?";
     $("title").setAttribute("aria-label", view === "notes" ? "Naslov bilješke" : "Naslov zadatka");
@@ -420,6 +560,30 @@ try {
     if (!b) return;
     filter = b.dataset.filter;
     document.querySelectorAll("[data-filter]").forEach(x => x.setAttribute("aria-pressed", String(x === b)));
+    render();
+  });
+
+  $("calendar-widget").addEventListener("click", e => {
+    const navigation = e.target.closest("[data-calendar-shift]");
+    if (navigation) {
+      calendarMonth = new Date(
+        calendarMonth.getFullYear(),
+        calendarMonth.getMonth() + Number(navigation.dataset.calendarShift),
+        1
+      );
+      calendarDateFilter = "";
+      render();
+      return;
+    }
+
+    const day = e.target.closest("[data-calendar-date]");
+    if (!day) return;
+    calendarDateFilter = calendarDateFilter === day.dataset.calendarDate ? "" : day.dataset.calendarDate;
+    render();
+  });
+
+  $("clear-date-filter").addEventListener("click", () => {
+    calendarDateFilter = "";
     render();
   });
 

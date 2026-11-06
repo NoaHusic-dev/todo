@@ -9,7 +9,7 @@ service cloud.firestore {
     function validItem(data) {
       return data.keys().hasOnly([
           'type', 'title', 'category', 'done', 'priority', 'body',
-          'createdAt', 'updatedAt'
+            'dueDate', 'createdAt', 'updatedAt'
         ])
         && data.keys().hasAll([
           'type', 'title', 'category', 'createdAt', 'updatedAt'
@@ -27,7 +27,7 @@ service cloud.firestore {
             && data.keys().hasAll(['body'])
             && data.body is string
             && data.body.size() <= 8000
-            && !data.keys().hasAny(['done', 'priority'])
+            && !data.keys().hasAny(['done', 'priority', 'dueDate'])
           )
           ||
           (
@@ -35,6 +35,13 @@ service cloud.firestore {
             && data.keys().hasAll(['done', 'priority'])
             && data.done is bool
             && data.priority in ['nizak', 'srednji', 'visok']
+            && (
+              !data.keys().hasAny(['dueDate'])
+              || (
+                data.dueDate is string
+                && data.dueDate.matches('^[0-9]{4}-[0-9]{2}-[0-9]{2}$')
+              )
+            )
             && !data.keys().hasAny(['body'])
           )
         );
