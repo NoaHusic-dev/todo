@@ -370,7 +370,6 @@ try {
   const db = firestoreSdk.initializeFirestore(app, {
     experimentalAutoDetectLongPolling: true
   });
-  firestoreSdk.setLogLevel("debug");
   const googleProvider = new authSdk.GoogleAuthProvider();
   const PRIO = { visok: "Visok prioritet", srednji: "Srednji prioritet", nizak: "Nizak prioritet" };
   const list = $("list");
@@ -851,6 +850,11 @@ try {
     setStatus("Učitavam tvoje zadatke i bilješke…");
     render();
     inspectLegacyItems();
+
+    // dijagnostika: pita server izravno i ispiše točan razlog ako ne uspije
+    firestoreSdk.getDocFromServer(firestoreSdk.doc(db, "users", user.uid, "items", "_test"))
+      .then(() => setStatus("Veza s bazom radi."))
+      .catch(err => setStatus(`Firestore greška [${err.code}]: ${err.message}`));
     let isInitialSnapshot = true;
     unsubscribeItems = firestoreSdk.onSnapshot(itemsRef, snapshot => {
       todos = snapshot.docs
