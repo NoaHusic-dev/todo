@@ -320,7 +320,7 @@
         <span class="caps" id="submit-label">Dodaj<br>zadatak</span>
       </button>
     </form>
-
+    <p class="tool-status" id="form-status" role="status" aria-live="polite"></p>
     <section id="zadaci" aria-label="Popis zadataka">
       <div class="bar">
         <div class="filters caps" role="group" aria-label="Filter zadataka">
@@ -348,8 +348,11 @@
 <script type="module">
 const $ = (id) => document.getElementById(id);
 const authStatus = $("auth-status");
-const setStatus = (message) => { $("tool-status").textContent = message; };
-
+const setStatus = (message) => {
+  $("tool-status").textContent = message;
+  const f = $("form-status");
+  if (f) f.textContent = message;
+};
 try {
   const [appSdk, authSdk, firestoreSdk] = await Promise.all([
     import("https://www.gstatic.com/firebasejs/11.10.0/firebase-app.js"),
@@ -364,7 +367,9 @@ try {
   };
   const app = appSdk.initializeApp(firebaseConfig);
   const auth = authSdk.getAuth(app);
-  const db = firestoreSdk.getFirestore(app);
+  const db = firestoreSdk.initializeFirestore(app, {
+  experimentalAutoDetectLongPolling: true
+  });
   const googleProvider = new authSdk.GoogleAuthProvider();
   const PRIO = { visok: "Visok prioritet", srednji: "Srednji prioritet", nizak: "Nizak prioritet" };
   const list = $("list");
@@ -624,32 +629,49 @@ try {
   });
 
   $("form").addEventListener("submit", async (e) => {
-    e.preventDefault();
-    const title = $("title").value.trim();
-    if (!title || !currentUser || !itemsRef) return;
-    const item = {
-      type: view === "notes" ? "note" : "task",
-      title,
-      category: $("category").value.trim(),
-      createdAt: firestoreSdk.serverTimestamp(),
-      updatedAt: firestoreSdk.serverTimestamp()
-    };
-    if (view === "notes") item.body = $("note-body").value.trim();
-    else {
-      item.priority = $("priority").value;
-      item.done = false;
-    }
-    try {
-      await firestoreSdk.addDoc(itemsRef, item);
-      $("title").value = "";
-      $("category").value = "";
-      $("note-body").value = "";
-      $("title").focus();
-      setStatus("");
-    } catch (error) {
-      showError("Spremanje nije uspjelo", error);
-    }
-  });
+  e.preventDefault();
+  const title = $("title").value.trim();
+  if (!title || !currentUser || !itemsRef) return;
+
+  const saved = {
+    title,
+    category: $("category").value.trim(),
+    body: $("note-body").value,
+    priority: $("priority").value
+  };
+  const item = {
+    type: view === "notes" ? "note" : "task",
+    title,
+    category: saved.category,
+    createdAt: firestoreSdk.serverTimestamp(),
+    updatedAt: firestoreSdk.serverTimestamp()
+  };
+  if (view === "notes") item.body = saved.body.trim();
+  else { item.priority = saved.priority; item.done = false; }
+
+  // polja se prazne odmah, ne čeka se server
+  $("form").reset();
+  $("title").focus();
+  setStatus("Spremam…");
+
+  const slow = setTimeout(() => {
+    setStatus("Spremanje traje predugo. Provjeri vezu, blokatore oglasa i postoji li Firestore baza.");
+  }, 6000);
+
+  try {
+    await firestoreSdk.addDoc(itemsRef, item);
+    setStatus("");
+  } catch (error) {
+    // greška: vrati tekst da se ništa ne izgubi
+    $("title").value = saved.title;
+    $("category").value = saved.category;
+    $("note-body").value = saved.body;
+    $("priority").value = saved.priority;
+    showError("Spremanje nije uspjelo", error);
+  } finally {
+    clearTimeout(slow);
+  }
+});
 
   list.addEventListener("click", async (e) => {
     const li = e.target.closest("li[data-id]");
