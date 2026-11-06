@@ -368,8 +368,9 @@ try {
   const app = appSdk.initializeApp(firebaseConfig);
   const auth = authSdk.getAuth(app);
   const db = firestoreSdk.initializeFirestore(app, {
-  experimentalAutoDetectLongPolling: true
+    experimentalAutoDetectLongPolling: true
   });
+  firestoreSdk.setLogLevel("debug");
   const googleProvider = new authSdk.GoogleAuthProvider();
   const PRIO = { visok: "Visok prioritet", srednji: "Srednji prioritet", nizak: "Nizak prioritet" };
   const list = $("list");
