@@ -326,6 +326,12 @@ try {
   });
 
   $("export-pdf").addEventListener("click", () => {
+    const printWindow = window.open("", "_blank");
+    if (!printWindow) {
+      setStatus("Izvoz nije uspio: dopusti skočne prozore za ovu stranicu i pokušaj ponovno.");
+      return;
+    }
+
     const escapeHtml = value => String(value ?? "").replace(/[&<>"']/g, character => ({
       "&": "&amp;",
       "<": "&lt;",
@@ -382,20 +388,39 @@ try {
       <footer class="print-footer">
       
       </footer>`;
-    document.body.append(printDocument);
-    document.body.classList.add("printing");
 
-    const cleanup = () => {
-      printDocument.remove();
-      document.body.classList.remove("printing");
-    };
-    window.addEventListener("afterprint", cleanup, { once: true });
     try {
-      window.print();
+      const stylesheet = document.querySelector('link[rel="stylesheet"]');
+      const startPrint = () => {
+        printWindow.focus();
+        try {
+          printWindow.print();
+        } catch (error) {
+          printWindow.close();
+          showError("Ispis nije uspio", error);
+        }
+      };
+      printWindow.addEventListener("afterprint", () => printWindow.close(), { once: true });
+      printWindow.document.open();
+      printWindow.document.write(`<!doctype html>
+        <html lang="hr">
+          <head>
+            <meta charset="utf-8">
+            <meta name="viewport" content="width=device-width, initial-scale=1">
+            <title>Zadaci i bilješke</title>
+            <link rel="stylesheet" href="${stylesheet.href}">
+          </head>
+          <body class="printing">${printDocument.outerHTML}</body>
+        </html>`);
+      printWindow.document.close();
+      if (printWindow.document.readyState === "complete") {
+        printWindow.requestAnimationFrame(startPrint);
+      } else {
+        printWindow.addEventListener("load", startPrint, { once: true });
+      }
       setStatus("U prozoru za ispis odaberi „Spremi kao PDF” ili svoj pisač.");
     } catch (error) {
-      window.removeEventListener("afterprint", cleanup);
-      cleanup();
+      printWindow.close();
       showError("Ispis nije uspio", error);
     }
   });
