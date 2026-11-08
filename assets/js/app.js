@@ -389,7 +389,6 @@ try {
       
       </footer>`;
     const printStyles = `
-      @media print {
       @page { margin: 16mm 18mm; }
       html, body { background: #fff !important; color: #222 !important; }
       body.printing { margin: 0; padding: 0; }
@@ -425,7 +424,6 @@ try {
       #print-document .print-section > p { margin: 0; padding: 12pt; border: 1px dashed #cbd3dc; border-radius: 5pt; color: #667085; font-size: 10pt; }
       #print-document .print-footer { display: flex; justify-content: space-between; gap: 10pt; margin: 30pt 0 0; padding: 9pt 0 0; border-top: 1px solid #d5dbe2; color: #667085; font-size: 8pt; }
       #print-document a { color: #347FC4; }
-      }
     `;
 
     try {
@@ -439,6 +437,11 @@ try {
         }
       };
       printWindow.addEventListener("afterprint", () => printWindow.close(), { once: true });
+      const schedulePrint = () => {
+        printWindow.requestAnimationFrame(() => {
+          printWindow.requestAnimationFrame(startPrint);
+        });
+      };
       printWindow.document.open();
       printWindow.document.write(`<!doctype html>
         <html lang="hr">
@@ -452,9 +455,9 @@ try {
         </html>`);
       printWindow.document.close();
       if (printWindow.document.readyState === "complete") {
-        printWindow.requestAnimationFrame(startPrint);
+        schedulePrint();
       } else {
-        printWindow.addEventListener("load", startPrint, { once: true });
+        printWindow.addEventListener("load", schedulePrint, { once: true });
       }
       setStatus("U prozoru za ispis odaberi „Spremi kao PDF” ili svoj pisač.");
     } catch (error) {
