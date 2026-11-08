@@ -326,12 +326,6 @@ try {
   });
 
   $("export-pdf").addEventListener("click", () => {
-    const printWindow = window.open("", "_blank");
-    if (!printWindow) {
-      setStatus("Izvoz nije uspio: dopusti skočne prozore za ovu stranicu i pokušaj ponovno.");
-      return;
-    }
-
     const escapeHtml = value => String(value ?? "").replace(/[&<>"']/g, character => ({
       "&": "&amp;",
       "<": "&lt;",
@@ -355,38 +349,55 @@ try {
         </li>`).join("")}</ol>`
       : "<p>Nema bilješki.</p>";
     const generatedAt = new Date().toLocaleString("hr-HR");
+    const taskLabel = tasks.length === 1
+      ? "zadatak"
+      : tasks.length % 10 >= 2 && tasks.length % 10 <= 4 && (tasks.length % 100 < 12 || tasks.length % 100 > 14)
+        ? "zadatka"
+        : "zadataka";
+    const noteLabel = notes.length === 1
+      ? "bilješka"
+      : notes.length % 10 >= 2 && notes.length % 10 <= 4 && (notes.length % 100 < 12 || notes.length % 100 > 14)
+        ? "bilješke"
+        : "bilješki";
+    const printDocument = document.createElement("article");
+    printDocument.id = "print-document";
+    printDocument.innerHTML = `
+      <header class="print-header">
+        <div class="print-brand">
+          <span><strong>TODO</strong><small>VERZIJA 1.1</small></span>
+        </div>
+        <a class="print-site" href="https://todo.noahusicdev.site/">todo.noahusicdev.site</a>
+      </header>
+      <main class="print-main">
+        <p class="print-eyebrow">PREGLED</p>
+        <h1>Zadaci i bilješke</h1>
+        <p class="print-date">Dokument izrađen ${escapeHtml(generatedAt)}</p>
+        <div class="print-summary">
+          <div><strong>${tasks.length}</strong><span>${taskLabel}</span></div>
+          <div><strong>${notes.length}</strong><span>${noteLabel}</span></div>
+        </div>
+        <section class="print-section"><h2><span>Zadaci</span><span class="print-section-count">${tasks.length}</span></h2>${taskList}</section>
+        <section class="print-section"><h2><span>Bilješke</span><span class="print-section-count">${notes.length}</span></h2>${noteList}</section>
+      </main>
+      <footer class="print-footer">
+      
+      </footer>`;
+    document.body.append(printDocument);
+    document.body.classList.add("printing");
 
-    printWindow.document.open();
-    printWindow.document.write(`<!doctype html>
-      <html lang="hr">
-        <head>
-          <meta charset="utf-8">
-          <meta name="viewport" content="width=device-width, initial-scale=1">
-          <title>Zadaci i bilješke</title>
-          <style>
-            @page { margin: 18mm; }
-            body { color: #222; font: 12pt/1.5 Arial, sans-serif; }
-            h1 { margin: 0 0 4pt; font-size: 24pt; }
-            .date { margin: 0 0 24pt; color: #555; font-size: 10pt; }
-            h2 { margin: 22pt 0 8pt; padding-bottom: 4pt; border-bottom: 1px solid #999; font-size: 16pt; }
-            ol { padding-left: 22pt; }
-            li { margin: 0 0 12pt; padding-left: 4pt; break-inside: avoid; }
-            li span { display: block; color: #555; font-size: 10pt; }
-            li p { margin: 5pt 0 0; white-space: pre-wrap; overflow-wrap: anywhere; }
-            @media print { a { color: inherit; } }
-          </style>
-        </head>
-        <body>
-          <h1>Zadaci i bilješke</h1>
-          <p class="date">Izvezeno: ${escapeHtml(generatedAt)}</p>
-          <section><h2>Zadaci (${tasks.length})</h2>${taskList}</section>
-          <section><h2>Bilješke (${notes.length})</h2>${noteList}</section>
-        <\/body>
-      </html>`);
-    printWindow.document.close();
-    printWindow.focus();
-    printWindow.print();
-    setStatus("U prozoru za ispis odaberi „Spremi kao PDF”.");
+    const cleanup = () => {
+      printDocument.remove();
+      document.body.classList.remove("printing");
+    };
+    window.addEventListener("afterprint", cleanup, { once: true });
+    try {
+      window.print();
+      setStatus("U prozoru za ispis odaberi „Spremi kao PDF” ili svoj pisač.");
+    } catch (error) {
+      window.removeEventListener("afterprint", cleanup);
+      cleanup();
+      showError("Ispis nije uspio", error);
+    }
   });
 
   $("form").addEventListener("submit", async (e) => {
