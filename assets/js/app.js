@@ -466,6 +466,51 @@ try {
     }
   });
 
+  const prioritySelect = $("priority");
+  const priorityField = document.querySelector(".priority-field");
+  const priorityTrigger = $("priority-trigger");
+  const priorityMenu = $("priority-menu");
+  const priorityTriggerLabel = $("priority-trigger-label");
+  const syncPriorityStyle = () => {
+    priorityField.dataset.priority = prioritySelect.value;
+    const labels = { nizak: "Nizak prioritet", srednji: "Srednji prioritet", visok: "Visok prioritet" };
+    priorityTriggerLabel.textContent = labels[prioritySelect.value] || labels.srednji;
+    priorityMenu.querySelectorAll("[data-value]").forEach(option => {
+      const selected = option.dataset.value === prioritySelect.value;
+      option.setAttribute("aria-selected", String(selected));
+      const check = option.querySelector("b");
+      if (check) check.remove();
+      if (selected) option.insertAdjacentHTML("beforeend", "<b aria-hidden=\"true\">✓</b>");
+    });
+  };
+  priorityTrigger.addEventListener("click", () => {
+    const open = priorityTrigger.getAttribute("aria-expanded") === "true";
+    priorityTrigger.setAttribute("aria-expanded", String(!open));
+    priorityMenu.hidden = open;
+  });
+  priorityMenu.addEventListener("click", event => {
+    const option = event.target.closest("[data-value]");
+    if (!option) return;
+    prioritySelect.value = option.dataset.value;
+    priorityTrigger.setAttribute("aria-expanded", "false");
+    priorityMenu.hidden = true;
+    syncPriorityStyle();
+  });
+  document.addEventListener("click", event => {
+    if (!priorityField.contains(event.target)) {
+      priorityTrigger.setAttribute("aria-expanded", "false");
+      priorityMenu.hidden = true;
+    }
+  });
+  document.addEventListener("keydown", event => {
+    if (event.key === "Escape") {
+      priorityTrigger.setAttribute("aria-expanded", "false");
+      priorityMenu.hidden = true;
+      priorityTrigger.focus();
+    }
+  });
+  syncPriorityStyle();
+
   $("form").addEventListener("submit", async (e) => {
   e.preventDefault();
   const title = $("title").value.trim();
@@ -494,6 +539,7 @@ try {
 
   // polja se prazne odmah, ne čeka se server
   $("form").reset();
+  syncPriorityStyle();
   $("title").focus();
   setStatus("Spremam…");
 
@@ -510,6 +556,7 @@ try {
     $("category").value = saved.category;
     $("note-body").value = saved.body;
     $("priority").value = saved.priority;
+    syncPriorityStyle();
     $("due-date").value = saved.dueDate;
     showError("Spremanje nije uspjelo", error);
   } finally {
@@ -654,6 +701,7 @@ try {
     const b = e.target.closest("[data-view]");
     if (!b) return;
     $("form").reset();
+    syncPriorityStyle();
     view = b.dataset.view;
     calendarDateFilter = "";
     $("app-shell").classList.toggle("notes-view", view === "notes");
@@ -665,6 +713,7 @@ try {
     $("zadaci").setAttribute("aria-label", view === "notes" ? "Popis bilješki" : "Popis zadataka");
     $("note-body").hidden = view !== "notes";
     $("priority").hidden = view === "notes";
+    document.querySelector(".priority-field").hidden = view === "notes";
     document.querySelector(".fields").classList.toggle("notes-mode", view === "notes");
     document.querySelector(".filters").hidden = view === "notes";
     filter = "all";
@@ -742,7 +791,28 @@ try {
         $("sign-in").disabled = false;
         return;
       }
-      $("user-email").textContent = user.email || user.displayName || "Google račun";
+      const accountName = user.displayName || user.email || "Google račun";
+      const accountEmail = user.email || accountName;
+      $("user-email").textContent = accountEmail;
+
+      const avatarImage = $("account-avatar-image");
+      const avatarFallback = $("account-avatar-fallback");
+      if (user.photoURL) {
+        avatarImage.src = user.photoURL;
+        avatarImage.hidden = false;
+        avatarFallback.hidden = true;
+      } else {
+        avatarImage.hidden = true;
+        avatarFallback.hidden = false;
+        const initials = accountName
+          .split(/\s+/)
+          .filter(Boolean)
+          .slice(0, 2)
+          .map(part => part[0])
+          .join("")
+          .toUpperCase();
+        avatarFallback.textContent = initials || "G";
+      }
       itemsRef = firestoreSdk.collection(db, "users", user.uid, "items");
       itemsLoading = true;
       itemsLoadError = "";

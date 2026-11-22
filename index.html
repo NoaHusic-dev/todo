@@ -20,10 +20,24 @@
 </head>
 <body>
 <header>
-  <a class="logo" href="#">TODO v1.1</a>
+  <a class="logo" href="#" aria-label="TODO v1.2">
+    <span class="logo-name">TODO</span>
+    <span class="logo-version">v1.2</span>
+  </a>
   <div class="account" id="account" hidden>
-    <span class="account-email" id="user-email"></span>
-    <button class="tool-button caps" id="sign-out" type="button">Odjava</button>
+    <div class="account-user">
+      <span class="account-avatar" id="account-avatar" aria-hidden="true">
+        <img id="account-avatar-image" alt="" hidden>
+        <span id="account-avatar-fallback"></span>
+      </span>
+      <span class="account-email" id="user-email"></span>
+    </div>
+    <button class="sign-out-button" id="sign-out" type="button" aria-label="Odjavi se">
+      <svg aria-hidden="true" viewBox="0 0 24 24">
+        <path d="M10 5H5a2 2 0 0 0-2 2v10a2 2 0 0 0 2 2h5M14 8l4 4-4 4M8 12h10"/>
+      </svg>
+      <span>Odjava</span>
+    </button>
   </div>
   <nav class="caps" id="github-nav" aria-label="Glavna navigacija">
     <a href="https://github.com/NoaHusic-dev" target="_blank" rel="noopener">GitHub</a>
@@ -106,11 +120,22 @@
       <textarea class="field note-body" id="note-body" placeholder="Sadržaj bilješke (neobavezno)" maxlength="2000" aria-label="Sadržaj bilješke" hidden></textarea>
       <div class="fields">
         <input class="field" id="category" type="text" placeholder="Kategorija (neobavezno)" maxlength="24" aria-label="Kategorija">
-        <select class="field" id="priority" aria-label="Prioritet" data-priority>
-          <option value="nizak">Nizak prioritet</option>
-          <option value="srednji" selected>Srednji prioritet</option>
-          <option value="visok">Visok prioritet</option>
-        </select>
+        <label class="priority-field" data-priority="srednji">
+          <select class="field" id="priority" aria-label="Prioritet" hidden>
+            <option value="nizak">Nizak prioritet</option>
+            <option value="srednji" selected>Srednji prioritet</option>
+            <option value="visok">Visok prioritet</option>
+          </select>
+          <button class="priority-trigger" id="priority-trigger" type="button" aria-haspopup="listbox" aria-expanded="false">
+            <span id="priority-trigger-label">Srednji prioritet</span>
+            <svg aria-hidden="true" viewBox="0 0 20 20"><path d="m6 8 4 4 4-4"/></svg>
+          </button>
+          <div class="priority-menu" id="priority-menu" role="listbox" aria-label="Prioritet" hidden>
+            <button type="button" role="option" data-value="nizak" aria-selected="false"><span>Nizak prioritet</span></button>
+            <button type="button" role="option" data-value="srednji" aria-selected="true"><span>Srednji prioritet</span><b>✓</b></button>
+            <button type="button" role="option" data-value="visok" aria-selected="false"><span>Visok prioritet</span></button>
+          </div>
+        </label>
         <label class="date-field" for="due-date">
           <span class="date-label caps">Rok (neobavezno)</span>
           <input class="field" id="due-date" type="date" aria-label="Rok zadatka">

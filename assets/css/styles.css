@@ -29,9 +29,48 @@
     margin: 0 var(--gutter); height: 68px; border-bottom: 1px solid var(--ink);
     display: flex; align-items: center; justify-content: space-between; gap: 16px;
   }
-  .logo { font-family: var(--label); font-weight: 700; font-size: 1.5rem; letter-spacing: .01em; text-decoration: none; }
-  .account { display: flex; align-items: center; gap: 14px; }
-  .account-email { max-width: 240px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .logo {
+    display: inline-flex; align-items: center; gap: 8px;
+    text-decoration: none;
+  }
+  .logo-name {
+    font-family: var(--label); font-size: 1.55rem; font-weight: 800;
+    letter-spacing: -.02em;
+  }
+  .logo-version {
+    padding: 4px 7px; border: 1px solid rgba(51, 49, 52, .14); border-radius: 999px;
+    background: rgba(51, 49, 52, .08); color: rgba(51, 49, 52, .68);
+    font: 700 .68rem/1 var(--label); letter-spacing: .06em;
+  }
+  .account { display: flex; align-items: center; gap: 10px; }
+  .account-user { display: flex; align-items: center; gap: 8px; min-width: 0; }
+  .account-avatar {
+    display: grid; flex: none; width: 34px; height: 34px; place-items: center;
+    overflow: hidden; border: 1px solid rgba(51, 49, 52, .18); border-radius: 50%;
+    background: rgba(255, 255, 255, .18); color: var(--ink);
+    box-shadow: 0 3px 10px rgba(30, 70, 110, .12);
+  }
+  .account-avatar img { width: 100%; height: 100%; object-fit: cover; }
+  #account-avatar-fallback { font: 800 .78rem var(--label); letter-spacing: .02em; }
+  .account-email {
+    max-width: 240px; overflow: hidden; color: rgba(51, 49, 52, .72);
+    font-size: .78rem; font-weight: 500; text-overflow: ellipsis; white-space: nowrap;
+  }
+  .sign-out-button {
+    display: inline-flex; align-items: center; justify-content: center; gap: 7px;
+    min-height: 38px; padding: 8px 12px; border: 1px solid rgba(51, 49, 52, .28);
+    border-radius: 999px; background: rgba(255, 255, 255, .08); color: var(--ink);
+    box-shadow: 0 4px 12px rgba(30, 70, 110, .10);
+    font: 700 .72rem/1 var(--label); letter-spacing: .12em; text-transform: uppercase;
+  }
+  .sign-out-button svg {
+    width: 17px; height: 17px; fill: none; stroke: currentColor;
+    stroke-width: 1.7; stroke-linecap: round; stroke-linejoin: round;
+  }
+  .sign-out-button:hover {
+    border-color: var(--ink); background: rgba(255, 255, 255, .18);
+    box-shadow: 0 6px 16px rgba(30, 70, 110, .16);
+  }
   nav { display: flex; gap: clamp(18px, 4vw, 66px); }
   nav a { text-decoration: none; padding: 6px 0; position: relative; }
   nav a::after { content: ""; position: absolute; left: 0; bottom: 0; height: 1px; width: 0; background: var(--ink); transition: width .25s; }
@@ -83,6 +122,31 @@
   .upcoming-task-date { color: var(--muted); font-size: .75rem; }
   .upcoming-empty { padding: 10px 0; color: var(--muted); font-size: .85rem; }
   .date-field { display: flex; min-width: 0; grid-column: 1 / -1; flex-direction: column; justify-content: flex-end; gap: 2px; }
+  .date-field {
+    width: 100%; max-width: none; grid-column: 1 / -1; gap: 5px;
+  }
+  .date-label { color: rgba(51, 49, 52, .68); font-size: .68rem; }
+  .date-field .field {
+    min-height: 40px; width: 100%; padding: 8px 10px;
+    border: 1px solid rgba(51, 49, 52, .22); border-radius: 12px;
+    background: rgba(255, 255, 255, .10); color: var(--ink);
+    box-shadow: 0 3px 10px rgba(30, 70, 110, .07);
+    font: 600 .92rem var(--sans);
+  }
+  .date-field .field:hover {
+    border-color: rgba(51, 49, 52, .48); background: rgba(255, 255, 255, .16);
+  }
+  .date-field .field:focus {
+    border-color: var(--ink); background: rgba(255, 255, 255, .18);
+    box-shadow: 0 0 0 3px rgba(51, 49, 52, .10);
+  }
+  .date-field .field::-webkit-calendar-picker-indicator {
+    width: 18px; height: 18px; padding: 2px; border-radius: 6px;
+    opacity: .72; cursor: pointer;
+  }
+  .date-field .field::-webkit-calendar-picker-indicator:hover {
+    opacity: 1; background: rgba(51, 49, 52, .08);
+  }
   .date-label { color: var(--muted); font-size: .62rem; }
   .date-field input { min-width: 0; min-height: 38px; padding: 7px 0; font-size: .9rem; }
 
@@ -107,9 +171,45 @@
   .title-input:focus, .field:focus { border-bottom-color: var(--accent); }
   .fields { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 24px; }
   .field { font-size: 1.05rem; }
-  select.field { appearance: none; cursor: pointer;
-    background-image: linear-gradient(45deg, transparent 50%, var(--ink) 50%), linear-gradient(135deg, var(--ink) 50%, transparent 50%);
-    background-position: calc(100% - 9px) 55%, calc(100% - 4px) 55%; background-size: 5px 5px; background-repeat: no-repeat; }
+  .priority-field {
+    position: relative; display: block; width: 100%; max-width: none;
+  }
+  .priority-trigger {
+    width: 100%; height: 40px; padding: 8px 36px 8px 12px;
+    border: 1px solid rgba(51, 49, 52, .22); border-radius: 12px;
+    background: rgba(255, 255, 255, .10); color: var(--ink);
+    box-shadow: 0 3px 10px rgba(30, 70, 110, .07);
+    font: 600 .92rem var(--sans); text-align: left;
+  }
+  .priority-trigger svg {
+    position: absolute; right: 12px; top: 12px; width: 16px; height: 16px;
+    fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round;
+    transition: transform .18s ease;
+  }
+  .priority-trigger[aria-expanded="true"] svg { transform: rotate(180deg); }
+  .priority-trigger:hover {
+    border-color: rgba(51, 49, 52, .48); background: rgba(255, 255, 255, .16);
+  }
+  .priority-trigger:focus-visible {
+    border-color: var(--ink); box-shadow: 0 0 0 3px rgba(51, 49, 52, .10);
+  }
+  .priority-menu {
+    position: absolute; z-index: 20; left: 0; top: calc(100% + 7px); width: 100%;
+    padding: 6px; border: 1px solid rgba(51, 49, 52, .16); border-radius: 14px;
+    background: #f7f9fc; color: #333133;
+    box-shadow: 0 14px 28px rgba(20, 55, 90, .18), 0 3px 8px rgba(20, 55, 90, .10);
+  }
+  .priority-menu button {
+    display: flex; width: 100%; min-height: 38px; align-items: center; justify-content: space-between;
+    padding: 8px 10px; border: 0; border-radius: 9px;
+    background: transparent; color: #333133;
+    font: 600 .86rem var(--sans); text-align: left;
+  }
+  .priority-menu button:hover,
+  .priority-menu button[aria-selected="true"] {
+    background: #e7eef6;
+  }
+  .priority-menu button b { color: #347fc4; font-size: .9rem; }
 
   .cta {
     display: inline-flex; align-items: center; gap: 12px; width: fit-content; min-height: 60px;
@@ -155,6 +255,41 @@
 
   /* lista */
   ul { list-style: none; margin: 0; padding: 0; }
+  #list,
+  .overview-panel,
+  dialog {
+    scrollbar-width: thin;
+    scrollbar-color: rgba(255, 255, 255, .42) transparent;
+  }
+  #list::-webkit-scrollbar,
+  .overview-panel::-webkit-scrollbar,
+  dialog::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+  }
+  #list::-webkit-scrollbar-button,
+  .overview-panel::-webkit-scrollbar-button,
+  dialog::-webkit-scrollbar-button {
+    display: none;
+    width: 0;
+    height: 0;
+  }
+  #list::-webkit-scrollbar-track,
+  .overview-panel::-webkit-scrollbar-track,
+  dialog::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  #list::-webkit-scrollbar-thumb,
+  .overview-panel::-webkit-scrollbar-thumb,
+  dialog::-webkit-scrollbar-thumb {
+    border-radius: 10px;
+    background: rgba(255, 255, 255, .42);
+  }
+  #list::-webkit-scrollbar-thumb:hover,
+  .overview-panel::-webkit-scrollbar-thumb:hover,
+  dialog::-webkit-scrollbar-thumb:hover {
+    background: rgba(255, 255, 255, .62);
+  }
   li { display: flex; align-items: center; gap: 18px; padding: 14px 0; border-bottom: 1px solid var(--grid); transition: opacity .2s, transform .2s; }
   li.removing { opacity: 0; transform: translateX(14px); }
   .check {
@@ -304,7 +439,9 @@
     .app-heading h1 { font-size: clamp(2.3rem, 10vw, 3.1rem); }
     form { margin-top: 36px; }
     .fields { grid-template-columns: 1fr; gap: 18px; }
-    .field, select.field { font-size: 17px; padding: 14px 0; }
+    .field { font-size: 17px; padding: 14px 0; }
+    .priority-field { width: 100%; margin: 0; }
+    .date-field { width: 100%; margin: 0; }
     .cta { flex-direction: row; gap: 12px; }
     .cta .caps { text-align: left; }
     .filters { gap: 22px; }
