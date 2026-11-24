@@ -370,7 +370,7 @@ try {
     printDocument.innerHTML = `
       <header class="print-header">
         <div class="print-brand">
-          <span><strong>TODO</strong><small>VERZIJA 1.1</small></span>
+          <span><strong>TODO</strong><small>VERZIJA 1.2</small></span>
         </div>
         <a class="print-site" href="https://todo.noahusicdev.site/">todo.noahusicdev.site</a>
       </header>
